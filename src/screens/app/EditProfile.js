@@ -1,0 +1,235 @@
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React from 'react';
+import LinearWrapper from '../../components/ui/LinearWrapper';
+import {
+  horizontalScale,
+  moderateScale,
+  verticalScale,
+} from '../../utils/Matrix';
+import {theme} from '../../components/Theme';
+import LinearGradient from 'react-native-linear-gradient';
+import {SvgXml} from 'react-native-svg';
+import Xmls from '../../utils/Xmls';
+
+export default function EditProfile({navigation}) {
+  return (
+    <LinearWrapper>
+      <View
+        style={[
+          styles.container,
+          {
+            paddingTop: horizontalScale(42),
+          },
+        ]}>
+        <View style={{width: '100%', alignItems: 'flex-start'}}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              width: horizontalScale(24),
+              height: verticalScale(24),
+            }}>
+            <SvgXml xml={Xmls.backArrowIcon} />
+          </TouchableOpacity>
+        </View>
+
+        <LinearGradient
+          colors={['#F1EA24', '#4CBA47']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          style={styles.gradientBorder}>
+          <View style={styles.innerCircle}>
+            <SvgXml
+              xml={Xmls.profileIcon}
+              width={CIRCLE_SIZE / 2}
+              height={CIRCLE_SIZE / 2}
+            />
+          </View>
+        </LinearGradient>
+        <Text
+          style={{
+            color: theme.lightColor.textWhite,
+            fontFamily: theme.fontFamily.LabGrotesqueBold,
+            marginVertical: verticalScale(6),
+            fontSize: 18,
+          }}>
+          John Smith
+        </Text>
+
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text
+            style={{
+              color: theme.lightColor.textWhite,
+              fontFamily: theme.fontFamily.LabGrotesqueRegular,
+            }}>
+            @johnsmith
+          </Text>
+          <View
+            style={{
+              width: horizontalScale(2),
+              height: horizontalScale(16),
+              backgroundColor: theme.lightColor.textGray,
+              marginHorizontal: horizontalScale(4),
+            }}
+          />
+          <Text
+            style={{
+              color: theme.lightColor.textWhite,
+              fontFamily: theme.fontFamily.LabGrotesqueRegular,
+            }}>
+            14k followers
+          </Text>
+        </View>
+        <View style={styles.editProfileContainer}>
+          <Text
+            style={{
+              color: theme.lightColor.textBlack,
+              fontFamily: theme.fontFamily.LabGrotesqueBold,
+              marginBottom: verticalScale(12),
+            }}>
+            Edit Profile
+          </Text>
+          <View
+            style={[
+              styles.subscriptionMethod,
+              {
+                marginBottom: verticalScale(12),
+              },
+            ]}>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                fontSize: 12,
+              }}>
+              Name
+            </Text>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
+                fontSize: 12,
+              }}>
+              John Smith
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.subscriptionMethod,
+              {
+                marginBottom: verticalScale(12),
+              },
+            ]}>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                fontSize: 12,
+              }}>
+              Email
+            </Text>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
+                fontSize: 12,
+              }}>
+              johnsmith@mail.com
+            </Text>
+          </View>
+          <View style={styles.subscriptionMethod}>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                fontSize: 12,
+              }}>
+              Password
+            </Text>
+            <Text
+              style={{
+                color: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
+                fontSize: 12,
+              }}>
+              ************
+            </Text>
+          </View>
+        </View>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            height: verticalScale(60),
+            width: '100%',
+            marginTop: verticalScale(12),
+          }}>
+          <LinearGradient
+            colors={['#F1EA24', '#4CBA47']}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: moderateScale(12),
+            }}>
+            <Text
+              style={{
+                color: theme.lightColor.textWhite,
+                fontSize: 18,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
+              }}>
+              Save Changes
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
+    </LinearWrapper>
+  );
+}
+
+const CIRCLE_SIZE = horizontalScale(135);
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: horizontalScale(20),
+    alignItems: 'center',
+  },
+  gradientBorder: {
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
+    padding: moderateScale(2),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerCircle: {
+    backgroundColor: theme.lightColor.bgWhite,
+    width: CIRCLE_SIZE - moderateScale(4),
+    height: CIRCLE_SIZE - moderateScale(4),
+    borderRadius: (CIRCLE_SIZE - moderateScale(4)) / 2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editProfileContainer: {
+    marginVertical: verticalScale(12),
+    marginHorizontal: horizontalScale(20),
+    height: verticalScale(260),
+    width: '100%',
+    backgroundColor: theme.lightColor.bgWhite,
+    borderRadius: moderateScale(14),
+    paddingHorizontal: horizontalScale(12),
+    paddingVertical: verticalScale(12),
+  },
+  subscriptionMethod: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    // marginHorizontal: horizontalScale(12),
+    borderWidth: 1,
+    borderColor: '#EFEFEF',
+    height: verticalScale(61),
+    borderRadius: moderateScale(12),
+    padding: verticalScale(20),
+  },
+});

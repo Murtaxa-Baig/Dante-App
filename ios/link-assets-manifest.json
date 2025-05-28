@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/LabGrotesque-Bold.ttf",
+      "sha1": "7f279ba285d4f3f0db37cbcb92a02f684f345508"
+    },
+    {
+      "path": "src/assets/fonts/LabGrotesque-Medium.ttf",
+      "sha1": "0c2691cfcafb4023ed75f0776089dc195e7793a2"
+    },
+    {
+      "path": "src/assets/fonts/LabGrotesque-Regular.ttf",
+      "sha1": "4996711c11066077e52a13dd20f1fc9eb75cf664"
+    }
+  ]
+}
