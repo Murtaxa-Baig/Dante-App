@@ -37,6 +37,9 @@ export default function LiveStreaming({navigation}) {
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [liveStreamStatus, setLiveStreamStatus] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordDuration, setRecordDuration] = useState(0);
+  const [recordingIntervalId, setRecordingIntervalId] = useState(null);
   const [toggleStates, setToggleStates] = useState(
     socialPlatforms.map(() => false),
   );
@@ -50,6 +53,70 @@ export default function LiveStreaming({navigation}) {
     Alert.alert('Error', 'Camera not available.');
     return null;
   }
+
+  useEffect(() => {
+    const startRecordingIfFocused = async () => {
+      if (isFocused && isCameraInitialized) {
+        await handleRecordVideo();
+      }
+    };
+    startRecordingIfFocused();
+  }, [isFocused, isCameraInitialized]);
+
+  const handleRecordVideo = async () => {
+    try {
+      setIsRecording(true);
+      setRecordDuration(0);
+
+      const recordingInterval = setInterval(() => {
+        setRecordDuration(prev => prev + 1);
+      }, 1000);
+
+      await cameraRef.current.startRecording({
+        onRecordingFinished: video => {
+          console.log('Recording finished:', video);
+          clearInterval(recordingInterval);
+          setIsRecording(false);
+          setRecordDuration(0);
+        },
+        onRecordingError: error => {
+          console.log('Recording error:', error);
+          clearInterval(recordingInterval);
+          setIsRecording(false);
+        },
+        fileType: 'mp4',
+      });
+    } catch (e) {
+      console.log('Error starting recording:', e);
+    }
+  };
+
+  function formatTime(seconds) {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    const formattedHrs = hrs < 10 ? `0${hrs}` : hrs;
+    const formattedMins = mins < 10 ? `0${mins}` : mins;
+    const formattedSecs = secs < 10 ? `0${secs}` : secs;
+
+    return `${formattedHrs}:${formattedMins}:${formattedSecs}`;
+  }
+
+  const handlePauseRecording = async () => {
+    try {
+      if (cameraRef.current) {
+        await cameraRef.current.stopRecording();
+      }
+      if (recordingIntervalId) {
+        clearInterval(recordingIntervalId);
+        setRecordingIntervalId(null);
+      }
+      setIsRecording(false);
+    } catch (error) {
+      console.log('Error pausing recording:', error);
+    }
+  };
 
   const socialIconLiveStream = [
     {icon: Xmls.youtubeIcon},
@@ -240,6 +307,27 @@ export default function LiveStreaming({navigation}) {
                 </View>
               </ScrollView>
             </View>
+            {isRecording && (
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: verticalScale(20),
+                  alignSelf: 'center',
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  paddingHorizontal: horizontalScale(12),
+                  paddingVertical: verticalScale(6),
+                  borderRadius: moderateScale(8),
+                }}>
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: 16,
+                    fontFamily: theme.fontFamily.LabGrotesqueBold,
+                  }}>
+                  {formatTime(recordDuration)}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
         {isModalVisible && (
@@ -257,7 +345,9 @@ export default function LiveStreaming({navigation}) {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
+                    // handlePauseRecording();
                     setIsModalVisible(false);
+                    // navigation.navigate('Summary');
                   }}
                   style={{
                     height: verticalScale(60),
@@ -285,7 +375,9 @@ export default function LiveStreaming({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
+                    handlePauseRecording();
                     setIsModalVisible(false);
+                    navigation.navigate('Summary');
                   }}
                   style={{
                     height: verticalScale(60),

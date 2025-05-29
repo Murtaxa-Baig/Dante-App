@@ -10,6 +10,7 @@ import SettingScreen from '../screens/app/SettingScreen';
 import SubscriptionScreen from '../screens/app/SubscriptionScreen';
 import EditProfile from '../screens/app/EditProfile';
 import LiveStreaming from '../screens/app/LiveStreaming';
+import Summary from '../screens/app/Summary';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ export default function AppStack() {
       <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
       <Stack.Screen name="LiveStreaming" component={LiveStreaming} />
+      <Stack.Screen name="Summary" component={Summary} />
     </Stack.Navigator>
   );
 }
