@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Modal,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
 import LinearWrapper from '../../components/ui/LinearWrapper';
@@ -22,7 +23,7 @@ import Xmls from '../../utils/Xmls';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AppHeader from '../../components/ui/AppHeader';
 import {theme} from '../../components/Theme';
-import ToggleSwitch from 'toggle-switch-react-native';
+import Permission from '../../utils/hooks/Permission';
 
 export default function GoLive({navigation}) {
   const [resolutionOpen, setResolutionOpen] = useState(false);
@@ -43,25 +44,14 @@ export default function GoLive({navigation}) {
   const [audioQualityOpen, setAudioQualityOpen] = useState(false);
   const [audioQualityValue, setAudioQualityValue] = useState(null);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [audioQualityItems, setAudioQualityItems] = useState([
     {label: 'Low', value: 'low'},
     {label: 'Medium', value: 'medium'},
     {label: 'High', value: 'high'},
   ]);
-  const socialPlatforms = [
-    {name: 'YouTube', icon: Xmls.youtubeIcon},
-    {name: 'TikTok', icon: Xmls.tiktokIcon},
-    {name: 'Facebook', icon: Xmls.instagramIcon},
-    {name: 'Bigo', icon: Xmls.bigoIcon},
-  ];
+
   const [liveSetting, setLiveSetting] = useState(true);
-  const [isGoLive, setIsGoLive] = useState(false);
-  const [liveStreamStatus, setLiveStreamStatus] = useState(false);
   const [summaryScreen, setSummaryScreen] = useState(false);
-  const [toggleStates, setToggleStates] = useState(
-    socialPlatforms.map(() => false),
-  );
 
   const socialIcon = [
     {icon: Xmls.youtubeIcon},
@@ -72,83 +62,21 @@ export default function GoLive({navigation}) {
     {icon: Xmls.facebookIcon},
   ];
 
-  const socialIconLiveStream = [
-    {icon: Xmls.youtubeIcon},
-    {icon: Xmls.tiktokIcon},
-    {icon: Xmls.bigoIcon},
-    {icon: Xmls.facebookIcon},
-    {icon: Xmls.addSocialItemIcon},
-  ];
-
-  const renderSocialItem = ({item}: any) => (
+  const renderSocialItem = ({item}) => (
     <View style={styles.socialContainer}>
       <SvgXml xml={item.icon} width={30} height={30} />
     </View>
   );
-  const renderSocialLiveStreamItem = ({item, index}: any) => (
-    <View style={{alignItems: 'center'}}>
-      {/* Status Text - Always rendered to preserve layout */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginBottom: verticalScale(4),
-        }}>
-        {item.icon !== Xmls.addSocialItemIcon ? (
-          toggleStates[index] ? (
-            <>
-              <LinearGradient
-                colors={['#F1EA24', '#4CBA47']}
-                style={styles.statusDot}
-              />
-              <Text
-                style={{
-                  color: 'white',
-                  marginLeft: horizontalScale(2),
-                  fontFamily: theme.fontFamily.LabGrotesqueBold,
-                }}>
-                LIVE
-              </Text>
-            </>
-          ) : (
-            <Text
-              style={{
-                color: 'gray',
-                fontFamily: theme.fontFamily.LabGrotesqueRegular,
-              }}>
-              PAUSED
-            </Text>
-          )
-        ) : (
-          // Clean placeholder: no marginLeft, no dot, just height
-          <View style={{height: 20}} /> // Adjust height to match text+dot
-        )}
-      </View>
 
-      {/* Social Icon */}
-      <View style={styles.socialContainer}>
-        <SvgXml xml={item.icon} width={30} height={30} />
-      </View>
+  const checkPermission = async () => {
+    const {requestPermission} = Permission();
+    const granted = await requestPermission();
 
-      {/* Toggle Switch - Only show if not "Add Social" icon */}
-      {item.icon !== Xmls.addSocialItemIcon && (
-        <View style={{marginTop: verticalScale(-12)}}>
-          <ToggleSwitch
-            isOn={toggleStates[index]}
-            onColor="#4CBA47"
-            offColor="#ccc"
-            size="medium"
-            onToggle={() => toggleHandler(index)}
-          />
-        </View>
-      )}
-    </View>
-  );
-
-  const toggleHandler = index => {
-    const newStates = [...toggleStates];
-    newStates[index] = !newStates[index];
-    setToggleStates(newStates);
+    if (granted) {
+      navigation.navigate('LiveStreaming');
+    } else {
+      Alert.alert('Error', 'Camera permission required.');
+    }
   };
 
   return (
@@ -175,8 +103,6 @@ export default function GoLive({navigation}) {
           </TouchableOpacity>
         </View>
       )}
-      {isGoLive && <AppHeader navigation={navigation} />}
-      {summaryScreen && <AppHeader navigation={navigation} />}
       <ScrollView contentContainerStyle={{paddingBottom: verticalScale(64)}}>
         {liveSetting && (
           <>
@@ -463,10 +389,8 @@ export default function GoLive({navigation}) {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => {
-                  setIsGoLive(true);
-                  setLiveSetting(false);
-                }}
+                onPress={() => checkPermission()}
+                // onPress={() => navigation.navigate('LiveStreaming')}
                 style={{
                   height: verticalScale(60),
                   width: '100%',
@@ -500,7 +424,6 @@ export default function GoLive({navigation}) {
                 end={{x: 1, y: 0}}
                 style={styles.buttonWrapper}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('SignUp')}
                   activeOpacity={0.8}
                   style={styles.buttonInner}>
                   <View style={styles.buttonGradient}>
@@ -514,7 +437,6 @@ export default function GoLive({navigation}) {
                 end={{x: 1, y: 0}}
                 style={styles.buttonWrapper}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('SignUp')}
                   activeOpacity={0.8}
                   style={styles.buttonInner}>
                   <View style={styles.buttonGradient}>
@@ -522,157 +444,6 @@ export default function GoLive({navigation}) {
                   </View>
                 </TouchableOpacity>
               </LinearGradient>
-            </View>
-          </>
-        )}
-
-        {isGoLive && (
-          <>
-            {/* <AppHeader navigation={navigation} /> */}
-            <View
-              style={[
-                styles.liveStreamStatus,
-                {
-                  height: liveStreamStatus
-                    ? verticalScale(241)
-                    : verticalScale(56),
-                  justifyContent: 'center',
-                },
-              ]}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                <Text
-                  style={{
-                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    color: theme.lightColor.textWhite,
-                  }}>
-                  Livestream Status
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setLiveStreamStatus(!liveStreamStatus)}>
-                  <SvgXml
-                    xml={
-                      liveStreamStatus
-                        ? Xmls.dropUpIcon
-                        : Xmls.dropdownIconWhite
-                    }
-                    height={12}
-                    width={24}
-                  />
-                </TouchableOpacity>
-              </View>
-              {liveStreamStatus && (
-                <>
-                  <FlatList
-                    horizontal
-                    data={socialIconLiveStream}
-                    renderItem={renderSocialLiveStreamItem}
-                    keyExtractor={(_, index) => index.toString()}
-                    contentContainerStyle={styles.flatListstatusContainer}
-                    showsHorizontalScrollIndicator={false}
-                  />
-                  <TouchableOpacity
-                    onPress={() => setIsModalVisible(true)}
-                    style={{
-                      height: verticalScale(60),
-                      marginTop: verticalScale(4),
-                    }}>
-                    <LinearGradient
-                      colors={['#F1EA24', '#4CBA47']}
-                      start={{x: 0, y: 0}}
-                      end={{x: 1, y: 0}}
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: moderateScale(12),
-                      }}>
-                      <Text
-                        style={{
-                          color: theme.lightColor.textWhite,
-                          fontSize: 18,
-                          fontFamily: theme.fontFamily.LabGrotesqueBold,
-                        }}>
-                        Live Settings
-                      </Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-            <View style={styles.liveScreen}>
-              <KeyboardAvoidingView style={{flex: 1}}>
-                {/* Top stats bar */}
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                  <View style={styles.statsBar}>
-                    {/* LIVE Badge */}
-                    <View style={styles.liveBadge}>
-                      <LinearGradient
-                        colors={['#F1EA24', '#4CBA47']}
-                        style={styles.statusDot}
-                      />
-                      <Text style={styles.liveText}>LIVE</Text>
-                    </View>
-
-                    {/* Icons and Stats */}
-                    <View style={styles.iconContainer}>
-                      <SvgXml xml={Xmls.likeIcon} height={16} width={16} />
-                      <Text style={styles.iconText}>90k</Text>
-                    </View>
-
-                    <View style={styles.iconContainer}>
-                      <SvgXml xml={Xmls.viewIcon} height={16} width={16} />
-                      <Text style={styles.iconText}>25k</Text>
-                    </View>
-
-                    <View style={styles.iconContainerNoBg}>
-                      <SvgXml xml={Xmls.youtubeIcon} height={16} width={16} />
-                      <Text style={styles.iconText}>15k</Text>
-                    </View>
-
-                    <View style={styles.iconContainerNoBg}>
-                      <SvgXml xml={Xmls.facebookIcon} height={16} width={16} />
-                      <Text style={styles.iconText}>10k</Text>
-                    </View>
-                  </View>
-                </ScrollView>
-
-                {/* Comments + Comment Hide icon */}
-
-                <View style={styles.commentsWrapper}>
-                  <ScrollView
-                    style={styles.commentsScroll}
-                    contentContainerStyle={{paddingBottom: 20}}>
-                    {Array(3)
-                      .fill(null)
-                      .map((_, index) => (
-                        <View key={index} style={styles.commentRow}>
-                          <View style={styles.commentProfileView} />
-                          <Text style={styles.commentText}>
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Really enjoying this stream!"
-                          </Text>
-                        </View>
-                      ))}
-                  </ScrollView>
-
-                  {/* Hide Icon */}
-                  <View style={styles.commentHideIcon}>
-                    <SvgXml xml={Xmls.commentHide} />
-                  </View>
-                </View>
-
-                {/* Comment input */}
-                <TextInput
-                  style={styles.commentField}
-                  placeholder="Comment"
-                  placeholderTextColor="#FFFFFF"
-                />
-              </KeyboardAvoidingView>
             </View>
           </>
         )}
@@ -1163,7 +934,6 @@ export default function GoLive({navigation}) {
                   padding: 3,
                 }}>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('SignUp')}
                   activeOpacity={0.8}
                   style={{
                     height: verticalScale(57),
@@ -1232,7 +1002,6 @@ export default function GoLive({navigation}) {
                 marginHorizontal: horizontalScale(20),
               }}>
               <TouchableOpacity
-                onPress={() => navigation.navigate('SignUp')}
                 activeOpacity={0.8}
                 style={{
                   height: verticalScale(57),
@@ -1262,128 +1031,6 @@ export default function GoLive({navigation}) {
             </LinearGradient>
             {/* </ScrollView> */}
           </>
-        )}
-
-        {isModalVisible && (
-          <Modal isVisible={isModalVisible} transparent animationType="fade">
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContent}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textBlack,
-                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    textAlign: 'center',
-                    marginVertical: verticalScale(12),
-                  }}>
-                  Live Settings
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsGoLive(false);
-                    // setLiveSetting(true);
-                    setIsModalVisible(false);
-                    setSummaryScreen(true);
-                  }}
-                  style={{
-                    height: verticalScale(60),
-                    marginTop: verticalScale(8),
-                  }}>
-                  <LinearGradient
-                    colors={['#F1EA24', '#4CBA47']}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: moderateScale(12),
-                    }}>
-                    <Text
-                      style={{
-                        color: theme.lightColor.textWhite,
-                        fontSize: 18,
-                        fontFamily: theme.fontFamily.LabGrotesqueBold,
-                      }}>
-                      Pause Live
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setIsGoLive(false);
-                    // setLiveSetting(true);
-                    setIsModalVisible(false);
-                    setSummaryScreen(true);
-                  }}
-                  style={{
-                    height: verticalScale(60),
-                    marginTop: verticalScale(8),
-                  }}>
-                  <LinearGradient
-                    colors={['#1A1464', '#AA176B', '#B3176B', '#EB5C20']}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    style={{
-                      flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderRadius: moderateScale(12),
-                    }}>
-                    <Text
-                      style={{
-                        color: theme.lightColor.textWhite,
-                        fontSize: 18,
-                        fontFamily: theme.fontFamily.LabGrotesqueBold,
-                      }}>
-                      End all livestream
-                    </Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-                <LinearGradient
-                  colors={['#EB5C20', '#B3176B', '#AA176B', '#1A1464']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  style={{
-                    width: '100%',
-                    borderRadius: moderateScale(12),
-                    padding: 3,
-                    marginTop: verticalScale(8),
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setIsGoLive(false);
-                      // setLiveSetting(true);
-                      setIsModalVisible(false);
-                      setSummaryScreen(true);
-                    }}
-                    activeOpacity={0.8}
-                    style={{
-                      height: verticalScale(60),
-                      width: '100%',
-                      borderRadius: moderateScale(9),
-                    }}>
-                    <LinearGradient
-                      colors={['#ffffff', '#ffffff']}
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: moderateScale(9),
-                      }}>
-                      <Text
-                        style={{
-                          color: '#D82D7E',
-                          fontSize: 18,
-                          fontFamily: theme.fontFamily.LabGrotesqueBold,
-                        }}>
-                        Close
-                      </Text>
-                    </LinearGradient>
-                  </TouchableOpacity>
-                </LinearGradient>
-              </View>
-            </View>
-          </Modal>
         )}
       </ScrollView>
     </LinearWrapper>
@@ -1561,18 +1208,6 @@ const styles = StyleSheet.create({
   },
 
   // Live Stream style is here
-  liveStreamStatus: {
-    height: verticalScale(56),
-    // marginTop: verticalScale(8),
-    marginHorizontal: horizontalScale(20),
-    backgroundColor: theme.lightColor.bgLightBlack,
-    borderRadius: moderateScale(24),
-    paddingHorizontal: horizontalScale(16),
-    paddingVertical: verticalScale(16),
-  },
-  flatListstatusContainer: {
-    marginTop: verticalScale(8),
-  },
 
   statusDot: {
     height: verticalScale(10),
@@ -1601,40 +1236,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  liveScreen: {
-    flex: 1,
-    height: verticalScale(600),
-    backgroundColor: '#000',
-    marginHorizontal: horizontalScale(20),
-    paddingHorizontal: horizontalScale(16),
-    paddingVertical: verticalScale(16),
-    borderRadius: moderateScale(24),
-    marginTop: verticalScale(12),
-    marginBottom: verticalScale(20),
-  },
   statsBar: {
     flexDirection: 'row',
     alignItems: 'center',
     height: verticalScale(34),
   },
-  iconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: verticalScale(34),
-    width: horizontalScale(73),
-    backgroundColor: '#333333',
-    borderRadius: moderateScale(10),
-    marginRight: 10,
-  },
-  iconContainerNoBg: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: verticalScale(34),
-    width: horizontalScale(50),
-    marginRight: 10,
-  },
+
   iconText: {
     color: theme.lightColor.textWhite,
     marginLeft: horizontalScale(4),
@@ -1644,58 +1251,6 @@ const styles = StyleSheet.create({
     height: verticalScale(155),
   },
 
-  commentsWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-    marginTop: verticalScale(140),
-    marginBottom: verticalScale(10),
-  },
-  commentsScroll: {
-    flex: 1,
-  },
-  commentProfileView: {
-    height: COMMENT_CIRCLE_SIZE,
-    width: COMMENT_CIRCLE_SIZE,
-    borderRadius: COMMENT_CIRCLE_SIZE / 2,
-    backgroundColor: theme.lightColor.bgWhite,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: horizontalScale(3),
-  },
-  commentField: {
-    width: '100%',
-    height: verticalScale(60),
-    backgroundColor: '#333333',
-    padding: verticalScale(20),
-    borderRadius: moderateScale(12),
-    color: theme.lightColor.textWhite,
-    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-  },
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: horizontalScale(10),
-  },
-  liveText: {
-    color: 'white',
-    marginLeft: horizontalScale(4),
-    fontFamily: theme.fontFamily.LabGrotesqueBold,
-  },
-
-  commentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(8),
-    marginBottom: verticalScale(4),
-    width: '90%',
-  },
-
-  commentText: {
-    fontSize: 12,
-    color: 'white',
-    marginLeft: horizontalScale(6),
-    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-  },
   commentsWithIcon: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1709,25 +1264,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  commentHideIcon: {
-    marginHorizontal: horizontalScale(10),
-    marginTop: verticalScale(100),
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: horizontalScale(20),
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    height: verticalScale(280),
-    width: '100%',
-    paddingHorizontal: horizontalScale(12),
-    paddingVertical: verticalScale(12),
-    borderRadius: moderateScale(12),
-  },
   Performance: {
     marginHorizontal: horizontalScale(20),
     marginVertical: verticalScale(12),
