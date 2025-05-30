@@ -18,17 +18,59 @@ import Xmls from '../../utils/Xmls';
 import {SvgXml} from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
+import SocialLoginHook from '../../utils/hooks/SocialLoginHook';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from '../../utils/hooks/MmkvHook';
 
 export default function OnBoardingScreen({navigation}) {
+  const [userData, setUserData] = useMMKVStorage('userData', storage, false);
+
   const [showMore, setShowMore] = useState(false);
 
+  const handleFacebookLogin = async () => {
+    console.log('Facebook Login initiated');
+    const {loginWithFacebook} = SocialLoginHook();
+    try {
+      const userCredential = await loginWithFacebook();
+      console.log('Facebook Login Success:', userCredential.user);
+
+      // setUserData(userCredential.user);
+    } catch (error) {
+      console.error('Facebook Login Failed:', error);
+    }
+  };
+
+  const handleYoutubeLogin = () => {
+    console.log('YouTube Login not implemented');
+  };
+
+  const handleTiktokLogin = () => {
+    console.log('TikTok Login not implemented');
+  };
+
+  const handleInstagramLogin = () => {
+    console.log('Instagram Login not implemented');
+  };
+
+  const handleBigoLogin = () => {
+    console.log('BIGO Login not implemented');
+  };
+
+  const handleTwitchLogin = () => {
+    console.log('Twitch Login not implemented');
+  };
+
   const socialBtnData = [
-    {icon: Xmls.youtubeIcon, title: 'Youtube'},
-    {icon: Xmls.tiktokIcon, title: 'Tiktok'},
-    {icon: Xmls.instagramIcon, title: 'Instagram'},
-    {icon: Xmls.bigoIcon, title: 'BIGO'},
-    {icon: Xmls.twitchIcon, title: 'Twitch'},
-    {icon: Xmls.facebookIcon, title: 'Facebook'},
+    {icon: Xmls.youtubeIcon, title: 'Youtube', onPress: handleYoutubeLogin},
+    {icon: Xmls.tiktokIcon, title: 'Tiktok', onPress: handleTiktokLogin},
+    {
+      icon: Xmls.instagramIcon,
+      title: 'Instagram',
+      onPress: handleInstagramLogin,
+    },
+    {icon: Xmls.bigoIcon, title: 'BIGO', onPress: handleBigoLogin},
+    {icon: Xmls.twitchIcon, title: 'Twitch', onPress: handleTwitchLogin},
+    {icon: Xmls.facebookIcon, title: 'Facebook', onPress: handleFacebookLogin},
   ];
 
   return (
@@ -47,7 +89,10 @@ export default function OnBoardingScreen({navigation}) {
           />
 
           {socialBtnData.slice(0, 4).map((item, index) => (
-            <TouchableOpacity key={index} style={style.socialBtn}>
+            <TouchableOpacity
+              key={index}
+              style={style.socialBtn}
+              onPress={item.onPress}>
               <SvgXml xml={item.icon} />
               <Text style={style.socialBtnText}>Sign in with {item.title}</Text>
             </TouchableOpacity>
@@ -55,7 +100,10 @@ export default function OnBoardingScreen({navigation}) {
 
           {showMore &&
             socialBtnData.slice(4).map((item, index) => (
-              <TouchableOpacity key={index} style={style.socialBtn}>
+              <TouchableOpacity
+                key={index}
+                style={style.socialBtn}
+                onPress={item.onPress}>
                 <SvgXml xml={item.icon} />
                 <Text style={style.socialBtnText}>
                   Sign in with {item.title}

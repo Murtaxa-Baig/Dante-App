@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "885470639147",
+    "project_id": "dantesumlar",
+    "storage_bucket": "dantesumlar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:885470639147:android:d22d1a7b34b658d005666e",
+        "android_client_info": {
+          "package_name": "com.dante"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCso7luPfQOjy8uRE3OP6RfEBNVuHSC8do"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
