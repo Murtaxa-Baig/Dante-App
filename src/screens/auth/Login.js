@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import LinearWrapper from '../../components/ui/LinearWrapper';
 import {
@@ -20,10 +21,62 @@ import Xmls from '../../utils/Xmls';
 import LinearGradient from 'react-native-linear-gradient';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
+import SocialLoginHook from '../../utils/hooks/SocialLoginHook';
 
 export default function Login({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage, false);
+  const [loading, setLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const handleFacebookLogin = async () => {
+    setLoading(true);
+    console.log('Facebook Login initiated');
+    const {loginWithFacebook} = SocialLoginHook();
+    try {
+      const userCredential = await loginWithFacebook();
+      console.log('Facebook Login Success:', userCredential.user);
+      setUserData(userCredential.user);
+      // console.log('user data is here', userCredential.user);
+
+      setLoading(false);
+    } catch (error) {
+      console.error('Facebook Login Failed:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleYoutubeLogin = () => {
+    console.log('YouTube Login not implemented');
+  };
+
+  const handleTiktokLogin = () => {
+    console.log('TikTok Login not implemented');
+  };
+
+  const handleInstagramLogin = () => {
+    console.log('Instagram Login not implemented');
+  };
+
+  const handleBigoLogin = () => {
+    console.log('BIGO Login not implemented');
+  };
+
+  const handleTwitchLogin = () => {
+    console.log('Twitch Login not implemented');
+  };
+
+  const socialBtnData = [
+    {icon: Xmls.youtubeIcon, title: 'Youtube', onPress: handleYoutubeLogin},
+    {icon: Xmls.tiktokIcon, title: 'Tiktok', onPress: handleTiktokLogin},
+    {
+      icon: Xmls.instagramIcon,
+      title: 'Instagram',
+      onPress: handleInstagramLogin,
+    },
+    {icon: Xmls.bigoIcon, title: 'BIGO', onPress: handleBigoLogin},
+    {icon: Xmls.twitchIcon, title: 'Twitch', onPress: handleTwitchLogin},
+    {icon: Xmls.facebookIcon, title: 'Facebook', onPress: handleFacebookLogin},
+  ];
 
   return (
     <LinearWrapper>
@@ -43,17 +96,15 @@ export default function Login({navigation}) {
             Quick sign in with:
           </Text>
           <View style={style.iconsWrapper}>
-            {[
-              Xmls.facebookIcon,
-              Xmls.tiktokIcon,
-              Xmls.instagramIcon,
-              Xmls.bigoIcon,
-              Xmls.twitchIcon,
-              Xmls.youtubeIcon,
-            ].map((item, index) => (
-              <View key={index} style={style.iconContainer}>
-                <SvgXml xml={item} />
-              </View>
+            {socialBtnData.map((item, index) => (
+              <TouchableOpacity
+                onPress={() => {
+                  item.onPress();
+                }}
+                key={index}
+                style={style.iconContainer}>
+                <SvgXml xml={item.icon} />
+              </TouchableOpacity>
             ))}
           </View>
           <View
@@ -145,14 +196,14 @@ export default function Login({navigation}) {
                     alignItems: 'center',
                     borderRadius: moderateScale(9),
                   }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textWhite,
-                      fontSize: 18,
-                      fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    }}>
-                    Login
-                  </Text>
+                  {loading ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.lightColor.textWhite}
+                    />
+                  ) : (
+                    <Text style={style.buttonText}>Login</Text>
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
             </LinearGradient>
@@ -260,5 +311,10 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: horizontalScale(20),
+  },
+  buttonText: {
+    color: theme.lightColor.textWhite,
+    fontSize: 18,
+    fontFamily: theme.fontFamily.LabGrotesqueBold,
   },
 });

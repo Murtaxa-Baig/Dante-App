@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import LinearWrapper from '../../components/ui/LinearWrapper';
@@ -18,28 +19,43 @@ import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
+import {getApp} from '@react-native-firebase/app';
+import {getAuth, signOut} from '@react-native-firebase/auth';
 
 export default function EditProfile({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
   const [name, setName] = useState(userData?.displayName || '');
   const [loading, setLoading] = useState(false);
 
-  // const handleSaveName = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const user = auth().currentUser;
-  //     await user.updateProfile({displayName: name});
-  //     const updatedData = {
-  //       ...userData,
-  //       displayName: name,
-  //     };
-  //     setUserData(updatedData);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     console.error('Error updating name:', error);
-  //     setLoading(false);
-  //   }
-  // };
+  const handleSaveName = async () => {
+    setLoading(true);
+    try {
+      const firebaseApp = getApp();
+      const auth = getAuth(firebaseApp);
+
+      const user = auth.currentUser;
+
+      if (!user) {
+        console.error('No user is logged in.');
+        setLoading(false);
+        return;
+      }
+
+      await user.updateProfile({displayName: name});
+
+      const updatedData = {
+        ...userData,
+        displayName: name,
+      };
+
+      setUserData(updatedData);
+      setLoading(false);
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error updating name:', error);
+      setLoading(false);
+    }
+  };
 
   return (
     <LinearWrapper>
@@ -201,10 +217,10 @@ export default function EditProfile({navigation}) {
           </View>
         </View>
         <TouchableOpacity
-          // onPress={handleSaveName}
-          onPress={() => {
-            navigation.goBack();
-          }}
+          onPress={handleSaveName}
+          // onPress={() => {
+          //   navigation.goBack();
+          // }}
           style={{
             height: verticalScale(60),
             width: '100%',
@@ -220,14 +236,21 @@ export default function EditProfile({navigation}) {
               alignItems: 'center',
               borderRadius: moderateScale(12),
             }}>
-            <Text
-              style={{
-                color: theme.lightColor.textWhite,
-                fontSize: 18,
-                fontFamily: theme.fontFamily.LabGrotesqueBold,
-              }}>
-              Save Changes
-            </Text>
+            {loading ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.lightColor.textWhite}
+              />
+            ) : (
+              <Text
+                style={{
+                  color: theme.lightColor.textWhite,
+                  fontSize: 18,
+                  fontFamily: theme.fontFamily.LabGrotesqueBold,
+                }}>
+                Save Changes
+              </Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </View>

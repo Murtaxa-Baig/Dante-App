@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from 'react-native';
 import React, {useState} from 'react';
 import LinearWrapper from '../../components/ui/LinearWrapper';
@@ -20,6 +21,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import MaskedView from '@react-native-masked-view/masked-view';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
+import {getApp} from '@react-native-firebase/app';
+import {getAuth, signOut} from '@react-native-firebase/auth';
 
 export default function Profile({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
@@ -55,6 +58,18 @@ export default function Profile({navigation}) {
     {title: 'Facebook', icon: Xmls.facebookIcon, status: 'connected'},
     {title: 'Twitch', icon: Xmls.twitchIcon, status: 'connect'},
   ];
+
+  const handleLogout = async () => {
+    try {
+      const firebaseApp = getApp();
+      const auth = getAuth(firebaseApp);
+      await auth.signOut();
+      storage.clearStore();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <LinearWrapper>
       <View
@@ -70,11 +85,41 @@ export default function Profile({navigation}) {
           end={{x: 1, y: 0}}
           style={styles.gradientBorder}>
           <View style={styles.innerCircle}>
-            <SvgXml
-              xml={Xmls.profileIcon}
-              width={CIRCLE_SIZE / 2}
-              height={CIRCLE_SIZE / 2}
-            />
+            {userData?.photoURL ? (
+              <Image
+                source={{uri: userData.photoURL}}
+                style={{
+                  width: CIRCLE_SIZE - 4,
+                  height: CIRCLE_SIZE - 4,
+                  borderRadius: CIRCLE_SIZE / 2,
+                }}
+                resizeMode="cover"
+              />
+            ) : (
+              <SvgXml
+                xml={Xmls.profileIcon}
+                width={CIRCLE_SIZE / 2}
+                height={CIRCLE_SIZE / 2}
+              />
+            )}
+
+            <TouchableOpacity
+              style={{
+                height: 30,
+                width: 30,
+                borderRadius: moderateScale(30),
+                borderWidth: 1,
+                borderColor: theme.lightColor.textGray,
+                backgroundColor: theme.lightColor.bgWhite,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: verticalScale(16),
+                right: horizontalScale(0),
+              }}>
+              <SvgXml xml={Xmls.editIcon} width={16} height={16} />
+            </TouchableOpacity>
           </View>
         </LinearGradient>
         <Text
@@ -142,7 +187,7 @@ export default function Profile({navigation}) {
       </View>
       <ScrollView contentContainerStyle={{paddingBottom: verticalScale(64)}}>
         <View style={styles.container}>
-          {isEditProfile ? (
+          {/* {isEditProfile ? (
             <>
               <View style={styles.editProfileContainer}>
                 <Text
@@ -248,9 +293,9 @@ export default function Profile({navigation}) {
                 </LinearGradient>
               </TouchableOpacity>
             </>
-          ) : (
-            <>
-              {/* <TouchableOpacity
+          ) : ( */}
+          <>
+            {/* <TouchableOpacity
                 onPress={() => setIsEditProfile(true)}
                 style={{
                   height: verticalScale(46),
@@ -277,319 +322,318 @@ export default function Profile({navigation}) {
                   </Text>
                 </LinearGradient>
               </TouchableOpacity> */}
-              <View style={styles.platformsContainer}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textBlack,
-                    fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    marginBottom: verticalScale(12),
-                  }}>
-                  Connected platforms
-                </Text>
-                {platforms.map((platform, index) => {
-                  return (
-                    <View style={styles.platformsSection} key={index}>
-                      <View
-                        style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <SvgXml xml={platform.icon} height={30} width={30} />
-                        <Text
-                          style={{
-                            color: theme.lightColor.textBlack,
-                            fontFamily: theme.fontFamily.LabGrotesqueBold,
-                            marginLeft: horizontalScale(4),
-                          }}>
-                          {platform.title}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          backgroundColor: '#4CBA471A',
-                          paddingHorizontal: horizontalScale(4),
-                          paddingVertical: verticalScale(3),
-                          borderRadius: moderateScale(5),
-                        }}>
-                        <Text
-                          style={{
-                            color: theme.lightColor.textGreen,
-                            fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                          }}>
-                          Connected
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-              </View>
-              <View style={styles.livestreamSettingsContainer}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textBlack,
-                    fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    marginBottom: verticalScale(12),
-                  }}>
-                  Livestream Settings
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginVertical: verticalScale(2),
-                  }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textBlack,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}>
-                    Resolution
-                  </Text>
-                  <View style={{marginBottom: 12}}>
-                    <DropDownPicker
-                      open={resolutionOpen}
-                      value={resolutionValue}
-                      items={resolutionItems}
-                      setOpen={setResolutionOpen}
-                      setValue={setResolutionValue}
-                      setItems={setResolutionItems}
-                      itemSeparatorStyle={styles.itemSeparatorStyle}
-                      itemSeparator={true}
-                      listMode="SCROLLVIEW"
-                      placeholder="360p"
-                      style={styles.dropdownStyle}
-                      dropDownContainerStyle={[
-                        styles.dropDownContainer,
-                        {
-                          fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                          zIndex: 3000,
-                        },
-                      ]}
-                      textStyle={{
-                        color: theme.lightColor.textBlack,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      }}
-                      onOpen={() => {
-                        setFrameRateOpen(false);
-                        setAudioQualityOpen(false);
-                      }}
-                      zIndex={3000}
-                      zIndexInverse={1000}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginVertical: verticalScale(2),
-                  }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textBlack,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}>
-                    Frame Rate
-                  </Text>
-                  <View style={{marginBottom: 12}}>
-                    <DropDownPicker
-                      open={frameRateOpen}
-                      value={frameRateValue}
-                      items={frameRateItems}
-                      setOpen={setFrameRateOpen}
-                      setValue={setFrameRateValue}
-                      setItems={setFrameRateItems}
-                      itemSeparatorStyle={styles.itemSeparatorStyle}
-                      itemSeparator={true}
-                      placeholder="30fps"
-                      style={styles.dropdownStyle}
-                      dropDownContainerStyle={[
-                        styles.dropDownContainer,
-                        {
-                          backgroundColor: theme.lightColor.textGray,
-                          zIndex: 3000,
-                        },
-                      ]}
-                      textStyle={{
-                        color: theme.lightColor.textBlack,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      }}
-                      onOpen={() => {
-                        setResolutionOpen(false);
-                        setAudioQualityOpen(false);
-                      }}
-                      zIndex={2000}
-                      zIndexInverse={2000}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginVertical: verticalScale(2),
-                  }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textBlack,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}>
-                    Audio Quality
-                  </Text>
-                  <View style={{marginBottom: 12}}>
-                    <DropDownPicker
-                      open={audioQualityOpen}
-                      value={audioQualityValue}
-                      items={audioQualityItems}
-                      setOpen={setAudioQualityOpen}
-                      setValue={setAudioQualityValue}
-                      setItems={setAudioQualityItems}
-                      itemSeparatorStyle={styles.itemSeparatorStyle}
-                      itemSeparator={true}
-                      placeholder="Low"
-                      style={styles.dropdownStyle}
-                      dropDownContainerStyle={[
-                        styles.dropDownContainer,
-                        {
-                          backgroundColor: theme.lightColor.textGray,
-                          zIndex: 3000,
-                        },
-                      ]}
-                      textStyle={{
-                        color: theme.lightColor.textBlack,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      }}
-                      onOpen={() => {
-                        setResolutionOpen(false);
-                        setFrameRateOpen(false);
-                      }}
-                      zIndex={1000}
-                      zIndexInverse={3000}
-                    />
-                  </View>
-                </View>
-              </View>
-              <View style={styles.SubscriptionContainer}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textBlack,
-                    fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    marginBottom: verticalScale(12),
-                  }}>
-                  Subscription
-                </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('SubscriptionScreen')}
-                  style={[
-                    styles.subscriptionMethod,
-                    {
-                      marginBottom: verticalScale(12),
-                    },
-                  ]}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textBlack,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      fontSize: 12,
-                    }}>
-                    Subscription plan
-                  </Text>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        color: theme.lightColor.textBlack,
-                        fontFamily: theme.fontFamily.LabGrotesqueBold,
-                        fontSize: 12,
-                      }}>
-                      Premium
-                    </Text>
-                    <SvgXml
-                      xml={Xmls.rightArrowIcon}
-                      style={{marginLeft: horizontalScale(8)}}
-                    />
-                  </View>
-                </TouchableOpacity>
-                <View style={styles.subscriptionMethod}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textBlack,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      fontSize: 12,
-                    }}>
-                    Payment method
-                  </Text>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        color: theme.lightColor.textBlack,
-                        fontFamily: theme.fontFamily.LabGrotesqueBold,
-                        fontSize: 12,
-                      }}>
-                      Card ending ****1298
-                    </Text>
-                    <SvgXml
-                      xml={Xmls.rightArrowIcon}
-                      style={{marginLeft: horizontalScale(8)}}
-                    />
-                  </View>
-                </View>
-              </View>
-              <TouchableOpacity
+            <View style={styles.platformsContainer}>
+              <Text
                 style={{
-                  height: verticalScale(60),
-                  width: '100%',
+                  color: theme.lightColor.textBlack,
+                  fontFamily: theme.fontFamily.LabGrotesqueBold,
+                  marginBottom: verticalScale(12),
                 }}>
+                Connected platforms
+              </Text>
+              {platforms.map((platform, index) => {
+                return (
+                  <View style={styles.platformsSection} key={index}>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <SvgXml xml={platform.icon} height={30} width={30} />
+                      <Text
+                        style={{
+                          color: theme.lightColor.textBlack,
+                          fontFamily: theme.fontFamily.LabGrotesqueBold,
+                          marginLeft: horizontalScale(4),
+                        }}>
+                        {platform.title}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        backgroundColor: '#4CBA471A',
+                        paddingHorizontal: horizontalScale(4),
+                        paddingVertical: verticalScale(3),
+                        borderRadius: moderateScale(5),
+                      }}>
+                      <Text
+                        style={{
+                          color: theme.lightColor.textGreen,
+                          fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                        }}>
+                        Connected
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
+            <View style={styles.livestreamSettingsContainer}>
+              <Text
+                style={{
+                  color: theme.lightColor.textBlack,
+                  fontFamily: theme.fontFamily.LabGrotesqueBold,
+                  marginBottom: verticalScale(12),
+                }}>
+                Livestream Settings
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginVertical: verticalScale(2),
+                }}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textBlack,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  }}>
+                  Resolution
+                </Text>
+                <View style={{marginBottom: 12}}>
+                  <DropDownPicker
+                    open={resolutionOpen}
+                    value={resolutionValue}
+                    items={resolutionItems}
+                    setOpen={setResolutionOpen}
+                    setValue={setResolutionValue}
+                    setItems={setResolutionItems}
+                    itemSeparatorStyle={styles.itemSeparatorStyle}
+                    itemSeparator={true}
+                    listMode="SCROLLVIEW"
+                    placeholder="360p"
+                    style={styles.dropdownStyle}
+                    dropDownContainerStyle={[
+                      styles.dropDownContainer,
+                      {
+                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                        zIndex: 3000,
+                      },
+                    ]}
+                    textStyle={{
+                      color: theme.lightColor.textBlack,
+                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    }}
+                    onOpen={() => {
+                      setFrameRateOpen(false);
+                      setAudioQualityOpen(false);
+                    }}
+                    zIndex={3000}
+                    zIndexInverse={1000}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginVertical: verticalScale(2),
+                }}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textBlack,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  }}>
+                  Frame Rate
+                </Text>
+                <View style={{marginBottom: 12}}>
+                  <DropDownPicker
+                    open={frameRateOpen}
+                    value={frameRateValue}
+                    items={frameRateItems}
+                    setOpen={setFrameRateOpen}
+                    setValue={setFrameRateValue}
+                    setItems={setFrameRateItems}
+                    itemSeparatorStyle={styles.itemSeparatorStyle}
+                    itemSeparator={true}
+                    placeholder="30fps"
+                    style={styles.dropdownStyle}
+                    dropDownContainerStyle={[
+                      styles.dropDownContainer,
+                      {
+                        backgroundColor: theme.lightColor.textGray,
+                        zIndex: 3000,
+                      },
+                    ]}
+                    textStyle={{
+                      color: theme.lightColor.textBlack,
+                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    }}
+                    onOpen={() => {
+                      setResolutionOpen(false);
+                      setAudioQualityOpen(false);
+                    }}
+                    zIndex={2000}
+                    zIndexInverse={2000}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginVertical: verticalScale(2),
+                }}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textBlack,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  }}>
+                  Audio Quality
+                </Text>
+                <View style={{marginBottom: 12}}>
+                  <DropDownPicker
+                    open={audioQualityOpen}
+                    value={audioQualityValue}
+                    items={audioQualityItems}
+                    setOpen={setAudioQualityOpen}
+                    setValue={setAudioQualityValue}
+                    setItems={setAudioQualityItems}
+                    itemSeparatorStyle={styles.itemSeparatorStyle}
+                    itemSeparator={true}
+                    placeholder="Low"
+                    style={styles.dropdownStyle}
+                    dropDownContainerStyle={[
+                      styles.dropDownContainer,
+                      {
+                        backgroundColor: theme.lightColor.textGray,
+                        zIndex: 3000,
+                      },
+                    ]}
+                    textStyle={{
+                      color: theme.lightColor.textBlack,
+                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    }}
+                    onOpen={() => {
+                      setResolutionOpen(false);
+                      setFrameRateOpen(false);
+                    }}
+                    zIndex={1000}
+                    zIndexInverse={3000}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={styles.SubscriptionContainer}>
+              <Text
+                style={{
+                  color: theme.lightColor.textBlack,
+                  fontFamily: theme.fontFamily.LabGrotesqueBold,
+                  marginBottom: verticalScale(12),
+                }}>
+                Subscription
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('SubscriptionScreen')}
+                style={[
+                  styles.subscriptionMethod,
+                  {
+                    marginBottom: verticalScale(12),
+                  },
+                ]}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textBlack,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: 12,
+                  }}>
+                  Subscription plan
+                </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text
+                    style={{
+                      color: theme.lightColor.textBlack,
+                      fontFamily: theme.fontFamily.LabGrotesqueBold,
+                      fontSize: 12,
+                    }}>
+                    Premium
+                  </Text>
+                  <SvgXml
+                    xml={Xmls.rightArrowIcon}
+                    style={{marginLeft: horizontalScale(8)}}
+                  />
+                </View>
+              </TouchableOpacity>
+              <View style={styles.subscriptionMethod}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textBlack,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: 12,
+                  }}>
+                  Payment method
+                </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text
+                    style={{
+                      color: theme.lightColor.textBlack,
+                      fontFamily: theme.fontFamily.LabGrotesqueBold,
+                      fontSize: 12,
+                    }}>
+                    Card ending ****1298
+                  </Text>
+                  <SvgXml
+                    xml={Xmls.rightArrowIcon}
+                    style={{marginLeft: horizontalScale(8)}}
+                  />
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={{
+                height: verticalScale(60),
+                width: '100%',
+              }}>
+              <LinearGradient
+                colors={['#F1EA24', '#4CBA47']}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: moderateScale(12),
+                }}>
+                <Text
+                  style={{
+                    color: theme.lightColor.textWhite,
+                    fontSize: 18,
+                    fontFamily: theme.fontFamily.LabGrotesqueBold,
+                  }}>
+                  Save Changes
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleLogout()}
+              style={{marginVertical: verticalScale(20)}}>
+              <MaskedView
+                maskElement={
+                  <View style={{alignItems: 'center'}}>
+                    <Text
+                      style={[
+                        styles.moreAppsText,
+                        {backgroundColor: 'transparent'},
+                      ]}>
+                      Log out
+                    </Text>
+                  </View>
+                }>
                 <LinearGradient
                   colors={['#F1EA24', '#4CBA47']}
                   start={{x: 0, y: 0}}
                   end={{x: 1, y: 0}}
                   style={{
-                    flex: 1,
-                    justifyContent: 'center',
                     alignItems: 'center',
-                    borderRadius: moderateScale(12),
+                    height: 30,
                   }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textWhite,
-                      fontSize: 18,
-                      fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    }}>
-                    Save Changes
+                  <Text style={[styles.moreAppsText, {opacity: 0}]}>
+                    Log out
                   </Text>
                 </LinearGradient>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setUserData(false)}
-                style={{marginVertical: verticalScale(20)}}>
-                <MaskedView
-                  maskElement={
-                    <View style={{alignItems: 'center'}}>
-                      <Text
-                        style={[
-                          styles.moreAppsText,
-                          {backgroundColor: 'transparent'},
-                        ]}>
-                        Log out
-                      </Text>
-                    </View>
-                  }>
-                  <LinearGradient
-                    colors={['#F1EA24', '#4CBA47']}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 0}}
-                    style={{
-                      alignItems: 'center',
-                      height: 30,
-                    }}>
-                    <Text style={[styles.moreAppsText, {opacity: 0}]}>
-                      Log out
-                    </Text>
-                  </LinearGradient>
-                </MaskedView>
-              </TouchableOpacity>
-            </>
-          )}
+              </MaskedView>
+            </TouchableOpacity>
+          </>
+          {/* )} */}
         </View>
       </ScrollView>
     </LinearWrapper>

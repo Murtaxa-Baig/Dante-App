@@ -37,6 +37,8 @@ export default function OnBoardingScreen({navigation}) {
       const userCredential = await loginWithFacebook();
       console.log('Facebook Login Success:', userCredential.user);
       setUserData(userCredential.user);
+      // console.log('user data is here', userCredential.user);
+
       setLoading(false);
     } catch (error) {
       console.error('Facebook Login Failed:', error);
@@ -185,7 +187,10 @@ export default function OnBoardingScreen({navigation}) {
                   end={{x: 1, y: 0}}
                   style={style.buttonGradient}>
                   {loading ? (
-                    <ActivityIndicator size="small" color="#000" />
+                    <ActivityIndicator
+                      size="small"
+                      color={theme.lightColor.textWhite}
+                    />
                   ) : (
                     <Text style={style.buttonText}>Login</Text>
                   )}

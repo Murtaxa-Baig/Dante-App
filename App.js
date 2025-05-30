@@ -1,42 +1,52 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import AuthStack from './src/stacks/AuthStack';
-import {
-  initialWindowMetrics,
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
-import {Platform, SafeAreaView, StatusBar} from 'react-native';
 import AppStack from './src/stacks/AppStack';
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from 'react-native-safe-area-context';
+import {StatusBar, Platform} from 'react-native';
 import {ThemeProvider} from './src/components/Theme';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from './src/utils/hooks/MmkvHook';
+import {getApp} from '@react-native-firebase/app';
+import {getAuth, onAuthStateChanged} from '@react-native-firebase/auth';
 
 export default function App() {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
+  const [initializing, setInitializing] = useState(true);
 
-  console.log('userdata is here', userData);
+  useEffect(() => {
+    const firebaseApp = getApp();
+    const auth = getAuth(firebaseApp);
+
+    const subscriber = onAuthStateChanged(auth, user => {
+      if (user) {
+        setUserData(user);
+      } else {
+        setUserData(null);
+      }
+      if (initializing) setInitializing(false);
+    });
+
+    return subscriber;
+  }, [initializing, setUserData]);
+
+  if (initializing) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ThemeProvider>
         <NavigationContainer>
-          {/* <SafeAreaView
-            style={{
-              flex: 1,
-              paddingTop:
-                Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-            }}> */}
           <StatusBar
             barStyle="light-content"
             backgroundColor="#F37A52"
             translucent
           />
-          {/* <LinearWrapper> */}
-          {/* <AuthStack /> */}
-          {/* <AppStack /> */}
           {userData ? <AppStack /> : <AuthStack />}
-          {/* </LinearWrapper> */}
-          {/* </SafeAreaView> */}
         </NavigationContainer>
       </ThemeProvider>
     </SafeAreaProvider>
