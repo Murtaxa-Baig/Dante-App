@@ -24,17 +24,17 @@ export default function SocialLoginHook() {
       if (!data) {
         throw new Error('Something went wrong obtaining access token');
       }
-      console.log('Facebook Access Token: ', data.accessToken);
+      // console.log('Facebook Access Token: ', data.accessToken);
 
       // Create Firebase credential from access token
       const facebookCredential = FacebookAuthProvider.credential(
         data.accessToken,
       );
-      console.log('Firebase Credential: ', facebookCredential);
+      // console.log('Firebase Credential: ', facebookCredential);
 
       // Get Firebase Auth instance
       const auth = await signInWithCredential(getAuth(), facebookCredential);
-      console.log('Firebase Auth Result: ', auth);
+      // console.log('Firebase Auth Result: ', auth);
 
       return auth;
     } catch (error) {

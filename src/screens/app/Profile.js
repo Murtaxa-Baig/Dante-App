@@ -84,7 +84,7 @@ export default function Profile({navigation}) {
             marginVertical: verticalScale(6),
             fontSize: 18,
           }}>
-          John Smith
+          {userData?.displayName}
         </Text>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text
@@ -92,7 +92,7 @@ export default function Profile({navigation}) {
               color: theme.lightColor.textWhite,
               fontFamily: theme.fontFamily.LabGrotesqueRegular,
             }}>
-            @johnsmith
+            {userData?.displayName}
           </Text>
           <View
             style={{

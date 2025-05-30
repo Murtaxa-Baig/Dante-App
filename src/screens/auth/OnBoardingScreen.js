@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import {
@@ -24,19 +25,22 @@ import storage from '../../utils/hooks/MmkvHook';
 
 export default function OnBoardingScreen({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage, false);
+  const [loading, setLoading] = useState(false);
 
   const [showMore, setShowMore] = useState(false);
 
   const handleFacebookLogin = async () => {
+    setLoading(true);
     console.log('Facebook Login initiated');
     const {loginWithFacebook} = SocialLoginHook();
     try {
       const userCredential = await loginWithFacebook();
       console.log('Facebook Login Success:', userCredential.user);
-
-      // setUserData(userCredential.user);
+      setUserData(userCredential.user);
+      setLoading(false);
     } catch (error) {
       console.error('Facebook Login Failed:', error);
+      setLoading(false);
     }
   };
 
@@ -180,7 +184,11 @@ export default function OnBoardingScreen({navigation}) {
                   start={{x: 0, y: 0}}
                   end={{x: 1, y: 0}}
                   style={style.buttonGradient}>
-                  <Text style={style.buttonText}>Login</Text>
+                  {loading ? (
+                    <ActivityIndicator size="small" color="#000" />
+                  ) : (
+                    <Text style={style.buttonText}>Login</Text>
+                  )}
                 </LinearGradient>
               </TouchableOpacity>
             </LinearGradient>

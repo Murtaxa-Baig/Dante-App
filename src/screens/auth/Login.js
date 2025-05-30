@@ -128,7 +128,7 @@ export default function Login({navigation}) {
                 marginTop: verticalScale(20),
               }}>
               <TouchableOpacity
-                onPress={() => setUserData(true)}
+                // onPress={() => setUserData(true)}
                 style={{
                   height: verticalScale(60),
                   width: '100%',

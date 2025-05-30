@@ -14,6 +14,8 @@ import {
 } from '../../utils/Matrix';
 import {theme} from '../../components/Theme';
 import Xmls from '../../utils/Xmls';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from '../../utils/hooks/MmkvHook';
 
 const socialPlatforms = [
   {name: 'YouTube', icon: Xmls.youtubeIcon},
@@ -23,6 +25,7 @@ const socialPlatforms = [
 ];
 
 export default function Home({navigation}) {
+  const [userData, setUserData] = useMMKVStorage('userData', storage);
   const [toggleStates, setToggleStates] = useState(
     socialPlatforms.map(() => false),
   );
@@ -51,7 +54,7 @@ export default function Home({navigation}) {
               />
             </View>
           </LinearGradient>
-          <Text style={styles.title}>@johnsmith</Text>
+          <Text style={styles.title}>{userData?.displayName}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('SettingScreen')}>
           <SvgXml xml={Xmls.settingIcon} />

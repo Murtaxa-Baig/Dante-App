@@ -5,8 +5,12 @@ import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import LinearGradient from 'react-native-linear-gradient';
 import {theme} from '../Theme';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from '../../utils/hooks/MmkvHook';
 
 export default function AppHeader({navigation}) {
+  const [userData, setUserData] = useMMKVStorage('userData', storage);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -24,7 +28,7 @@ export default function AppHeader({navigation}) {
               />
             </View>
           </LinearGradient>
-          <Text style={styles.username}>@johnsmith</Text>
+          <Text style={styles.username}>{userData?.displayName}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('SettingScreen')}>
           <SvgXml xml={Xmls.settingIcon} />

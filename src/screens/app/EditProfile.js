@@ -1,5 +1,11 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import React, {useState} from 'react';
 import LinearWrapper from '../../components/ui/LinearWrapper';
 import {
   horizontalScale,
@@ -10,8 +16,31 @@ import {theme} from '../../components/Theme';
 import LinearGradient from 'react-native-linear-gradient';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from '../../utils/hooks/MmkvHook';
 
 export default function EditProfile({navigation}) {
+  const [userData, setUserData] = useMMKVStorage('userData', storage);
+  const [name, setName] = useState(userData?.displayName || '');
+  const [loading, setLoading] = useState(false);
+
+  // const handleSaveName = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const user = auth().currentUser;
+  //     await user.updateProfile({displayName: name});
+  //     const updatedData = {
+  //       ...userData,
+  //       displayName: name,
+  //     };
+  //     setUserData(updatedData);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     console.error('Error updating name:', error);
+  //     setLoading(false);
+  //   }
+  // };
+
   return (
     <LinearWrapper>
       <View
@@ -52,7 +81,7 @@ export default function EditProfile({navigation}) {
             marginVertical: verticalScale(6),
             fontSize: 18,
           }}>
-          John Smith
+          {userData?.displayName}
         </Text>
 
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -61,7 +90,7 @@ export default function EditProfile({navigation}) {
               color: theme.lightColor.textWhite,
               fontFamily: theme.fontFamily.LabGrotesqueRegular,
             }}>
-            @johnsmith
+            {userData?.displayName}
           </Text>
           <View
             style={{
@@ -103,14 +132,30 @@ export default function EditProfile({navigation}) {
               }}>
               Name
             </Text>
-            <Text
+            {/* <Text
               style={{
                 color: theme.lightColor.textBlack,
                 fontFamily: theme.fontFamily.LabGrotesqueBold,
                 fontSize: 12,
               }}>
-              John Smith
-            </Text>
+              {userData?.displayName}
+            </Text> */}
+            <TextInput
+              value={name}
+              onChangeText={setName}
+              placeholder="Enter your name"
+              style={{
+                textAlign: 'right',
+                height: 40,
+                fontSize: 12,
+                borderColor: theme.lightColor.textBlack,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
+                // borderWidth: 1,
+                // borderRadius: 8,
+                // paddingHorizontal: 10,
+                // marginBottom: 10,
+              }}
+            />
           </View>
           <View
             style={[
@@ -133,7 +178,7 @@ export default function EditProfile({navigation}) {
                 fontFamily: theme.fontFamily.LabGrotesqueBold,
                 fontSize: 12,
               }}>
-              johnsmith@mail.com
+              {userData?.email}
             </Text>
           </View>
           <View style={styles.subscriptionMethod}>
@@ -156,7 +201,10 @@ export default function EditProfile({navigation}) {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          // onPress={handleSaveName}
+          onPress={() => {
+            navigation.goBack();
+          }}
           style={{
             height: verticalScale(60),
             width: '100%',
