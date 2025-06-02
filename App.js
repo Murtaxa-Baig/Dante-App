@@ -23,7 +23,7 @@ export default function App() {
 
     const subscriber = onAuthStateChanged(auth, user => {
       if (user) {
-        setUserData(user);
+        setUserData(user?._user);
       } else {
         setUserData(null);
       }

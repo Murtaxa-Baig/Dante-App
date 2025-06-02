@@ -29,7 +29,7 @@ export default function Home({navigation}) {
   const [toggleStates, setToggleStates] = useState(
     socialPlatforms.map(() => false),
   );
-  // console.log('userData?.displayName========', userData?.displayName);
+  console.log('userData?.displayName========', userData?.displayName);
 
   const toggleHandler = index => {
     const newStates = [...toggleStates];

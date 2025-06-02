@@ -35,7 +35,7 @@ export default function Login({navigation}) {
     try {
       const userCredential = await loginWithFacebook();
       console.log('Facebook Login Success:', userCredential.user);
-      setUserData(userCredential.user);
+      setUserData(userCredential?.user?._user);
       // console.log('user data is here', userCredential.user);
 
       setLoading(false);
