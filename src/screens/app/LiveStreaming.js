@@ -21,7 +21,7 @@ import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import LinearGradient from 'react-native-linear-gradient';
 import ToggleSwitch from 'toggle-switch-react-native';
-import {Camera, useCameraDevice} from 'react-native-vision-camera';
+import {mediaDevices, RTCView} from 'react-native-webrtc';
 import {useIsFocused} from '@react-navigation/native';
 
 const socialPlatforms = [
@@ -40,56 +40,35 @@ export default function LiveStreaming({navigation}) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordDuration, setRecordDuration] = useState(0);
   const [recordingIntervalId, setRecordingIntervalId] = useState(null);
+  const [localStream, setLocalStream] = useState(null);
   const [toggleStates, setToggleStates] = useState(
     socialPlatforms.map(() => false),
   );
-
-  // check device
-  const device = useCameraDevice('front');
-  // console.log(device, "device");
-
-  // if device is not available
-  if (!device) {
-    Alert.alert('Error', 'Camera not available.');
-    return null;
-  }
-
   useEffect(() => {
-    const startRecordingIfFocused = async () => {
-      if (isFocused && isCameraInitialized) {
-        await handleRecordVideo();
+    const startCamera = async () => {
+      try {
+        const stream = await mediaDevices.getUserMedia({
+          audio: true,
+          video: {
+            facingMode: 'user', // front camera
+          },
+        });
+        setLocalStream(stream);
+      } catch (error) {
+        console.log('Error getting media stream:', error);
       }
     };
-    startRecordingIfFocused();
-  }, [isFocused, isCameraInitialized]);
 
-  const handleRecordVideo = async () => {
-    try {
-      setIsRecording(true);
-      setRecordDuration(0);
-
-      const recordingInterval = setInterval(() => {
-        setRecordDuration(prev => prev + 1);
-      }, 1000);
-
-      await cameraRef.current.startRecording({
-        onRecordingFinished: video => {
-          console.log('Recording finished:', video);
-          clearInterval(recordingInterval);
-          setIsRecording(false);
-          setRecordDuration(0);
-        },
-        onRecordingError: error => {
-          console.log('Recording error:', error);
-          clearInterval(recordingInterval);
-          setIsRecording(false);
-        },
-        fileType: 'mp4',
-      });
-    } catch (e) {
-      console.log('Error starting recording:', e);
+    if (isFocused) {
+      startCamera();
     }
-  };
+
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [isFocused]);
 
   function formatTime(seconds) {
     const hrs = Math.floor(seconds / 3600);
@@ -102,21 +81,6 @@ export default function LiveStreaming({navigation}) {
 
     return `${formattedHrs}:${formattedMins}:${formattedSecs}`;
   }
-
-  const handlePauseRecording = async () => {
-    try {
-      if (cameraRef.current) {
-        await cameraRef.current.stopRecording();
-      }
-      if (recordingIntervalId) {
-        clearInterval(recordingIntervalId);
-        setRecordingIntervalId(null);
-      }
-      setIsRecording(false);
-    } catch (error) {
-      console.log('Error pausing recording:', error);
-    }
-  };
 
   const socialIconLiveStream = [
     {icon: Xmls.youtubeIcon},
@@ -264,19 +228,11 @@ export default function LiveStreaming({navigation}) {
           )}
         </View>
         <View style={styles.cameraContainer}>
-          {device !== null && isFocused && (
-            <Camera
+          {localStream && (
+            <RTCView
+              streamURL={localStream.toURL()}
               style={StyleSheet.absoluteFill}
-              ref={cameraRef}
-              device={device}
-              isActive={true}
-              video={true}
-              audio={true}
-              orientation="portrait"
-              onInitialized={() => setIsCameraInitialized(true)}
-              onError={error => {
-                console.log('Camera error:', error);
-              }}
+              objectFit="cover"
             />
           )}
           <View style={styles.overlayContent}>
