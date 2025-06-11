@@ -49,9 +49,6 @@ export default function GoLive({navigation}) {
     {label: 'High', value: 'high'},
   ]);
 
-  const [liveSetting, setLiveSetting] = useState(true);
-  const [summaryScreen, setSummaryScreen] = useState(false);
-
   const socialIcon = [
     {icon: Xmls.youtubeIcon},
     {icon: Xmls.tiktokIcon},
@@ -79,382 +76,330 @@ export default function GoLive({navigation}) {
 
   return (
     <LinearWrapper>
-      {liveSetting && (
-        <View style={styles.header}>
-          <LinearGradient
-            colors={['#F1EA24', '#4CBA47']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.gradientBorder}>
-            <View style={styles.innerCircle}>
-              <SvgXml
-                xml={Xmls.profileIcon}
-                width={CIRCLE_SIZE / 2}
-                height={CIRCLE_SIZE / 2}
-              />
-            </View>
-          </LinearGradient>
-          <Text style={styles.username}>Start Livestream</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('SettingScreen')}>
-            <SvgXml xml={Xmls.settingIcon} />
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.header}>
+        <LinearGradient
+          colors={['#F1EA24', '#4CBA47']}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          style={styles.gradientBorder}>
+          <View style={styles.innerCircle}>
+            <SvgXml
+              xml={Xmls.profileIcon}
+              width={CIRCLE_SIZE / 2}
+              height={CIRCLE_SIZE / 2}
+            />
+          </View>
+        </LinearGradient>
+        <Text style={styles.username}>Start Livestream</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SettingScreen')}>
+          <SvgXml xml={Xmls.settingIcon} />
+        </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={{paddingBottom: verticalScale(64)}}>
-        {liveSetting && (
-          <>
-            {/* <View style={styles.header}>
-              <LinearGradient
-                colors={['#F1EA24', '#4CBA47']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={styles.gradientBorder}>
-                <View style={styles.innerCircle} />
-              </LinearGradient>
-              <Text style={styles.username}>Start Livestream</Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('SettingScreen')}>
-                <SvgXml xml={Xmls.settingIcon} />
-              </TouchableOpacity>
-            </View> */}
-            <View style={styles.container}>
-              {/* <View style={styles.header}>
-                <LinearGradient
-                  colors={['#F1EA24', '#4CBA47']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  style={styles.gradientBorder}>
-                  <View style={styles.innerCircle} />
-                </LinearGradient>
-                <Text style={styles.username}>Start Livestream</Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('SettingScreen')}>
-                  <SvgXml xml={Xmls.settingIcon} />
-                </TouchableOpacity>
-              </View> */}
-            </View>
+        <Text
+          style={{
+            marginHorizontal: horizontalScale(20),
+            marginTop: verticalScale(8),
+            color: theme.lightColor.textWhite,
+            fontFamily: theme.fontFamily.LabGrotesqueRegular,
+          }}>
+          Selected Platforms
+        </Text>
 
+        <FlatList
+          horizontal
+          data={socialIcon}
+          renderItem={renderSocialItem}
+          keyExtractor={(_, index) => index.toString()}
+          contentContainerStyle={styles.flatListContainer}
+          showsHorizontalScrollIndicator={false}
+          style={{marginLeft: horizontalScale(-4)}}
+        />
+
+        <View style={styles.liveStreamSettingContainer}>
+          <TextInput
+            style={styles.inputStyle}
+            placeholder="Title Field"
+            placeholderTextColor="#0000004A"
+          />
+          <TextInput
+            style={styles.descStyle}
+            placeholder="Description"
+            placeholderTextColor="#0000004A"
+            multiline={true}
+          />
+          <Text
+            style={{
+              color: theme.lightColor.textWhite,
+              fontFamily: theme.fontFamily.LabGrotesqueRegular,
+            }}>
+            Stream Settings
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: verticalScale(4),
+            }}>
             <Text
               style={{
-                marginHorizontal: horizontalScale(20),
-                marginTop: verticalScale(8),
                 color: theme.lightColor.textWhite,
                 fontFamily: theme.fontFamily.LabGrotesqueRegular,
               }}>
-              Selected Platforms
+              Resolution
             </Text>
-
-            <FlatList
-              horizontal
-              data={socialIcon}
-              renderItem={renderSocialItem}
-              keyExtractor={(_, index) => index.toString()}
-              contentContainerStyle={styles.flatListContainer}
-              showsHorizontalScrollIndicator={false}
-              style={{marginLeft: horizontalScale(-4)}}
-            />
-
-            <View style={styles.liveStreamSettingContainer}>
+            <View style={{marginBottom: 12}}>
+              <DropDownPicker
+                open={resolutionOpen}
+                value={resolutionValue}
+                items={resolutionItems}
+                setOpen={setResolutionOpen}
+                setValue={setResolutionValue}
+                setItems={setResolutionItems}
+                itemSeparatorStyle={styles.itemSeparatorStyle}
+                itemSeparator={true}
+                placeholder="480p"
+                arrowIconStyle={{tintColor: '#fff'}}
+                style={[
+                  styles.dropdownStyle,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                  },
+                ]}
+                dropDownContainerStyle={[
+                  styles.dropDownContainer,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                    zIndex: 3000,
+                  },
+                ]}
+                textStyle={{
+                  color: theme.lightColor.textWhite,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                }}
+                onOpen={() => {
+                  setFrameRateOpen(false);
+                  setAudioQualityOpen(false);
+                }}
+                zIndex={3000}
+                zIndexInverse={1000}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: verticalScale(4),
+            }}>
+            <Text
+              style={{
+                color: theme.lightColor.textWhite,
+                fontFamily: theme.fontFamily.LabGrotesqueRegular,
+              }}>
+              Frame Rate
+            </Text>
+            <View style={{marginBottom: 12}}>
+              <DropDownPicker
+                open={frameRateOpen}
+                value={frameRateValue}
+                items={frameRateItems}
+                setOpen={setFrameRateOpen}
+                setValue={setFrameRateValue}
+                setItems={setFrameRateItems}
+                itemSeparatorStyle={styles.itemSeparatorStyle}
+                itemSeparator={true}
+                arrowIconStyle={{tintColor: '#fff'}}
+                placeholder="30fps"
+                style={[
+                  styles.dropdownStyle,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                  },
+                ]}
+                dropDownContainerStyle={[
+                  styles.dropDownContainer,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                    zIndex: 2000,
+                  },
+                ]}
+                textStyle={{
+                  color: theme.lightColor.textWhite,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                }}
+                onOpen={() => {
+                  setResolutionOpen(false);
+                  setAudioQualityOpen(false);
+                }}
+                zIndex={2000}
+                zIndexInverse={2000}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: verticalScale(4),
+            }}>
+            <Text
+              style={{
+                color: theme.lightColor.textWhite,
+                fontFamily: theme.fontFamily.LabGrotesqueRegular,
+              }}>
+              Audio Quality
+            </Text>
+            <View style={{marginBottom: 12}}>
+              <DropDownPicker
+                open={audioQualityOpen}
+                value={audioQualityValue}
+                items={audioQualityItems}
+                setOpen={setAudioQualityOpen}
+                setValue={setAudioQualityValue}
+                setItems={setAudioQualityItems}
+                itemSeparatorStyle={styles.itemSeparatorStyle}
+                itemSeparator={true}
+                arrowIconStyle={{tintColor: '#fff'}}
+                placeholder="Low"
+                style={[
+                  styles.dropdownStyle,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  },
+                ]}
+                dropDownContainerStyle={[
+                  styles.dropDownContainer,
+                  {
+                    backgroundColor: theme.lightColor.textGray,
+                    zIndex: 1000,
+                  },
+                ]}
+                textStyle={{
+                  color: theme.lightColor.textWhite,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                }}
+                onOpen={() => {
+                  setResolutionOpen(false);
+                  setFrameRateOpen(false);
+                }}
+                zIndex={1000}
+                zIndexInverse={3000}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: verticalScale(10),
+            }}>
+            <View style={styles.thumbnail}>
+              <Text
+                style={{
+                  color: theme.lightColor.textGray,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                }}>
+                Thumbnail upload
+              </Text>
+              <SvgXml xml={Xmls.uploadIcon} />
+            </View>
+            <TouchableOpacity style={styles.uploadBtn}>
+              <SvgXml xml={Xmls.imageIcon} />
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: verticalScale(20),
+            }}>
+            <View style={{width: horizontalScale(155)}}>
               <TextInput
-                style={styles.inputStyle}
-                placeholder="Title Field"
+                style={styles.socialInput}
+                placeholder="Youtube"
                 placeholderTextColor="#0000004A"
               />
               <TextInput
-                style={styles.descStyle}
-                placeholder="Description"
+                style={styles.socialInput}
+                placeholder="Tiktok"
                 placeholderTextColor="#0000004A"
-                multiline={true}
               />
+              <TextInput
+                style={styles.socialInput}
+                placeholder="Instagram"
+                placeholderTextColor="#0000004A"
+              />
+            </View>
+            <View style={styles.previewContainer}>
               <Text
                 style={{
                   color: theme.lightColor.textWhite,
                   fontFamily: theme.fontFamily.LabGrotesqueRegular,
                 }}>
-                Stream Settings
+                Preview Window
               </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginVertical: verticalScale(4),
-                }}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textWhite,
-                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                  }}>
-                  Resolution
-                </Text>
-                <View style={{marginBottom: 12}}>
-                  <DropDownPicker
-                    open={resolutionOpen}
-                    value={resolutionValue}
-                    items={resolutionItems}
-                    setOpen={setResolutionOpen}
-                    setValue={setResolutionValue}
-                    setItems={setResolutionItems}
-                    itemSeparatorStyle={styles.itemSeparatorStyle}
-                    itemSeparator={true}
-                    placeholder="480p"
-                    arrowIconStyle={{tintColor: '#fff'}}
-                    style={[
-                      styles.dropdownStyle,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                      },
-                    ]}
-                    dropDownContainerStyle={[
-                      styles.dropDownContainer,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                        zIndex: 3000,
-                      },
-                    ]}
-                    textStyle={{
-                      color: theme.lightColor.textWhite,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}
-                    onOpen={() => {
-                      setFrameRateOpen(false);
-                      setAudioQualityOpen(false);
-                    }}
-                    zIndex={3000}
-                    zIndexInverse={1000}
-                  />
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginVertical: verticalScale(4),
-                }}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textWhite,
-                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                  }}>
-                  Frame Rate
-                </Text>
-                <View style={{marginBottom: 12}}>
-                  <DropDownPicker
-                    open={frameRateOpen}
-                    value={frameRateValue}
-                    items={frameRateItems}
-                    setOpen={setFrameRateOpen}
-                    setValue={setFrameRateValue}
-                    setItems={setFrameRateItems}
-                    itemSeparatorStyle={styles.itemSeparatorStyle}
-                    itemSeparator={true}
-                    arrowIconStyle={{tintColor: '#fff'}}
-                    placeholder="30fps"
-                    style={[
-                      styles.dropdownStyle,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                      },
-                    ]}
-                    dropDownContainerStyle={[
-                      styles.dropDownContainer,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                        zIndex: 2000,
-                      },
-                    ]}
-                    textStyle={{
-                      color: theme.lightColor.textWhite,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}
-                    onOpen={() => {
-                      setResolutionOpen(false);
-                      setAudioQualityOpen(false);
-                    }}
-                    zIndex={2000}
-                    zIndexInverse={2000}
-                  />
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginVertical: verticalScale(4),
-                }}>
-                <Text
-                  style={{
-                    color: theme.lightColor.textWhite,
-                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                  }}>
-                  Audio Quality
-                </Text>
-                <View style={{marginBottom: 12}}>
-                  <DropDownPicker
-                    open={audioQualityOpen}
-                    value={audioQualityValue}
-                    items={audioQualityItems}
-                    setOpen={setAudioQualityOpen}
-                    setValue={setAudioQualityValue}
-                    setItems={setAudioQualityItems}
-                    itemSeparatorStyle={styles.itemSeparatorStyle}
-                    itemSeparator={true}
-                    arrowIconStyle={{tintColor: '#fff'}}
-                    placeholder="Low"
-                    style={[
-                      styles.dropdownStyle,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      },
-                    ]}
-                    dropDownContainerStyle={[
-                      styles.dropDownContainer,
-                      {
-                        backgroundColor: theme.lightColor.textGray,
-                        zIndex: 1000,
-                      },
-                    ]}
-                    textStyle={{
-                      color: theme.lightColor.textWhite,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}
-                    onOpen={() => {
-                      setResolutionOpen(false);
-                      setFrameRateOpen(false);
-                    }}
-                    zIndex={1000}
-                    zIndexInverse={3000}
-                  />
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginVertical: verticalScale(10),
-                }}>
-                <View style={styles.thumbnail}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textGray,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}>
-                    Thumbnail upload
-                  </Text>
-                  <SvgXml xml={Xmls.uploadIcon} />
-                </View>
-                <TouchableOpacity style={styles.uploadBtn}>
-                  <SvgXml xml={Xmls.imageIcon} />
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginVertical: verticalScale(20),
-                }}>
-                <View style={{width: horizontalScale(155)}}>
-                  <TextInput
-                    style={styles.socialInput}
-                    placeholder="Youtube"
-                    placeholderTextColor="#0000004A"
-                  />
-                  <TextInput
-                    style={styles.socialInput}
-                    placeholder="Tiktok"
-                    placeholderTextColor="#0000004A"
-                  />
-                  <TextInput
-                    style={styles.socialInput}
-                    placeholder="Instagram"
-                    placeholderTextColor="#0000004A"
-                  />
-                </View>
-                <View style={styles.previewContainer}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textWhite,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                    }}>
-                    Preview Window
-                  </Text>
-                </View>
-              </View>
-              <TouchableOpacity
-                onPress={() => checkPermission()}
-                // onPress={() => navigation.navigate('LiveStreaming')}
-                style={{
-                  height: verticalScale(60),
-                  width: '100%',
-                  borderRadius: moderateScale(9),
-                  marginVertical: verticalScale(6),
-                }}>
-                <LinearGradient
-                  colors={['#F1EA24', '#4CBA47']}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderRadius: moderateScale(9),
-                  }}>
-                  <Text
-                    style={{
-                      color: theme.lightColor.textWhite,
-                      fontSize: 18,
-                      fontFamily: theme.fontFamily.LabGrotesqueBold,
-                    }}>
-                    Go Live
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <LinearGradient
-                colors={['#F1EA24', '#4CBA47']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={styles.buttonWrapper}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.buttonInner}>
-                  <View style={styles.buttonGradient}>
-                    <Text style={styles.buttonText}>Schedule for Later</Text>
-                  </View>
-                </TouchableOpacity>
-              </LinearGradient>
-              <LinearGradient
-                colors={['#EB5C20', '#B3176B', '#AA176B', '#1A1464']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={styles.buttonWrapper}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.buttonInner}>
-                  <View style={styles.buttonGradient}>
-                    <Text style={styles.cancelBtn}>Cancel</Text>
-                  </View>
-                </TouchableOpacity>
-              </LinearGradient>
             </View>
-          </>
-        )}
+          </View>
+          <TouchableOpacity
+            onPress={() => checkPermission()}
+            // onPress={() => navigation.navigate('LiveStreaming')}
+            style={{
+              height: verticalScale(60),
+              width: '100%',
+              borderRadius: moderateScale(9),
+              marginVertical: verticalScale(6),
+            }}>
+            <LinearGradient
+              colors={['#F1EA24', '#4CBA47']}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: moderateScale(9),
+              }}>
+              <Text
+                style={{
+                  color: theme.lightColor.textWhite,
+                  fontSize: 18,
+                  fontFamily: theme.fontFamily.LabGrotesqueBold,
+                }}>
+                Go Live
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
 
-        {summaryScreen && (
-          <>
-            {/* <ScrollView
-              contentContainerStyle={{paddingBottom: verticalScale(30)}}> */}
-            {/* <AppHeader navigation={navigation} /> */}
-
-            {/* </ScrollView> */}
-          </>
-        )}
+          <LinearGradient
+            colors={['#F1EA24', '#4CBA47']}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            style={styles.buttonWrapper}>
+            <TouchableOpacity activeOpacity={0.8} style={styles.buttonInner}>
+              <View style={styles.buttonGradient}>
+                <Text style={styles.buttonText}>Schedule for Later</Text>
+              </View>
+            </TouchableOpacity>
+          </LinearGradient>
+          <LinearGradient
+            colors={['#EB5C20', '#B3176B', '#AA176B', '#1A1464']}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            style={styles.buttonWrapper}>
+            <TouchableOpacity activeOpacity={0.8} style={styles.buttonInner}>
+              <View style={styles.buttonGradient}>
+                <Text style={styles.cancelBtn}>Cancel</Text>
+              </View>
+            </TouchableOpacity>
+          </LinearGradient>
+        </View>
       </ScrollView>
     </LinearWrapper>
   );
