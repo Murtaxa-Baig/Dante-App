@@ -533,6 +533,14 @@ export default function Summary({navigation}) {
           </LinearGradient>
         </View>
         <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('All', {
+              screen: 'History',
+              params: {
+                screen: 'History',
+              },
+            })
+          }
           style={{
             height: verticalScale(60),
             marginTop: verticalScale(16),

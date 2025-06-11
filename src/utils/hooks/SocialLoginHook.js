@@ -1,11 +1,19 @@
+import {useRef} from 'react';
 import {
   FacebookAuthProvider,
   getAuth,
   signInWithCredential,
 } from '@react-native-firebase/auth';
 import {LoginManager, AccessToken} from 'react-native-fbsdk-next';
+import {InstagramLogin} from 'react-native-instagram-login';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from './MmkvHook';
 
 export default function SocialLoginHook() {
+  const [userData, setUserData] = useMMKVStorage('userData', storage, false);
+
+  const instagramLoginRef = useRef(null);
+
   const loginWithFacebook = async () => {
     try {
       // Facebook login permissions request
@@ -43,5 +51,29 @@ export default function SocialLoginHook() {
     }
   };
 
-  return {loginWithFacebook};
+  const loginWithInstagram = () => {
+    instagramLoginRef.current?.show();
+  };
+
+  const handleInstagramSuccess = async token => {
+    console.log('Token log is here', token);
+
+    try {
+      const response = await fetch(
+        `https://graph.instagram.com/me?fields=id,username,account_type&access_token=${token}`,
+      );
+      const data = await response.json();
+      console.log('Instagram user data:', data);
+      // setUserData(data);
+    } catch (error) {
+      console.error('Instagram Login Error:', error);
+    }
+  };
+
+  return {
+    loginWithFacebook,
+    loginWithInstagram,
+    handleInstagramSuccess,
+    instagramLoginRef,
+  };
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Dante</string>
-    <string name="facebook_app_id">1127420706068994</string>
-    <string name="facebook_client_token">579ab2a5f9e8e32223fb900001c37f9a</string>
-    <string name="fb_login_protocol_scheme">fb1127420706068994</string>
+    <string name="facebook_app_id">2389491451451195</string>
+    <string name="facebook_client_token">3dbac7effa2e69e60366ebf65c8e0835</string>
+    <string name="fb_login_protocol_scheme">fb2389491451451195</string>
+    <color name="ic_launcher_background">#140f1d</color>
 </resources>

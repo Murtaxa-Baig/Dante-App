@@ -51,6 +51,28 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+             <!-- TikTok Deep Link Handler -->
+            <!-- <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="myapp"
+                    android:host="auth"
+                    android:path="/tiktok" />
+            </intent-filter> -->
+
+
+             <!-- Instgram Deep Link Handler -->
+           <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="myapp" android:host="auth" android:path="/instagram" />
+            </intent-filter>
+
         </activity>
     </application>
 </manifest>

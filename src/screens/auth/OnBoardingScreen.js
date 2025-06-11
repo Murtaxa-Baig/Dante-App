@@ -22,17 +22,25 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import SocialLoginHook from '../../utils/hooks/SocialLoginHook';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
+import InstagramLogin from 'react-native-instagram-login';
 
 export default function OnBoardingScreen({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage, false);
   const [loading, setLoading] = useState(false);
 
   const [showMore, setShowMore] = useState(false);
+  const {
+    loginWithFacebook,
+    loginWithInstagram,
+    handleInstagramSuccess,
+    instagramLoginRef,
+  } = SocialLoginHook();
+  // const {instagramLoginRef} = SocialLoginHook();
 
   const handleFacebookLogin = async () => {
     setLoading(true);
     console.log('Facebook Login initiated');
-    const {loginWithFacebook} = SocialLoginHook();
+    // const {loginWithFacebook} = SocialLoginHook();
     try {
       const userCredential = await loginWithFacebook();
       console.log('Facebook Login Success:', userCredential.user);
@@ -55,7 +63,10 @@ export default function OnBoardingScreen({navigation}) {
   };
 
   const handleInstagramLogin = () => {
-    console.log('Instagram Login not implemented');
+    // const {loginWithInstagram} = SocialLoginHook();
+
+    console.log('Instagram Login implemented');
+    loginWithInstagram();
   };
 
   const handleBigoLogin = () => {
@@ -226,6 +237,18 @@ export default function OnBoardingScreen({navigation}) {
               Terms of Service & Privacy Policy
             </Text>
           </View>
+          <InstagramLogin
+            ref={instagramLoginRef}
+            appId="24599153896340771"
+            appSecret="c87f1337dbde7ce9408637d2f8b104c6"
+            // redirectUrl="https://www.instagram.com/connect/login_success.html"
+            scopes={['user_profile', 'user_media']}
+            onLoginSuccess={handleInstagramSuccess}
+            // onLoginSuccess={token => console.log('Token form component', token)}
+            onLoginFailure={data =>
+              console.error('Instagram login failed', data)
+            }
+          />
         </View>
       </ScrollView>
     </LinearWrapper>

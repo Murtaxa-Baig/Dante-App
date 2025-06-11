@@ -12,6 +12,7 @@ import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from './src/utils/hooks/MmkvHook';
 import {getApp} from '@react-native-firebase/app';
 import {getAuth, onAuthStateChanged} from '@react-native-firebase/auth';
+import SplashScreen from 'react-native-splash-screen';
 
 export default function App() {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
@@ -40,7 +41,7 @@ export default function App() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ThemeProvider>
-        <NavigationContainer>
+        <NavigationContainer onReady={() => SplashScreen.hide()}>
           <StatusBar
             barStyle="light-content"
             backgroundColor="#F37A52"

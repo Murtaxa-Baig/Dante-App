@@ -303,7 +303,7 @@ export default function LiveStreaming({navigation}) {
                   onPress={() => {
                     // handlePauseRecording();
                     setIsModalVisible(false);
-                    // navigation.navigate('Summary');
+                    navigation.navigate('Summary');
                   }}
                   style={{
                     height: verticalScale(60),
