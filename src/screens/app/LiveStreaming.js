@@ -21,7 +21,7 @@ import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import LinearGradient from 'react-native-linear-gradient';
 import ToggleSwitch from 'toggle-switch-react-native';
-import {mediaDevices, RTCView} from 'react-native-webrtc';
+import {Camera, useCameraDevice} from 'react-native-vision-camera';
 import {useIsFocused} from '@react-navigation/native';
 
 const socialPlatforms = [
@@ -40,35 +40,152 @@ export default function LiveStreaming({navigation}) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordDuration, setRecordDuration] = useState(0);
   const [recordingIntervalId, setRecordingIntervalId] = useState(null);
-  const [localStream, setLocalStream] = useState(null);
+  const [chunkCounter, setChunkCounter] = useState(0);
+  const chunkCounterRef = useRef(0);
+  const isStreamingActiveRef = useRef(false);
   const [toggleStates, setToggleStates] = useState(
     socialPlatforms.map(() => false),
   );
-  useEffect(() => {
-    const startCamera = async () => {
-      try {
-        const stream = await mediaDevices.getUserMedia({
-          audio: true,
-          video: {
-            facingMode: 'user', // front camera
-          },
-        });
-        setLocalStream(stream);
-      } catch (error) {
-        console.log('Error getting media stream:', error);
-      }
-    };
 
-    if (isFocused) {
-      startCamera();
+  // check device
+  const device = useCameraDevice('front');
+  // console.log(device, "device");
+
+  // if device is not available
+  if (!device) {
+    Alert.alert('Error', 'Camera not available.');
+    return null;
+  }
+
+  const startChunkedRecording = async () => {
+    if (!isStreamingActiveRef.current) return;
+
+    try {
+      // Start recording current chunk
+      await cameraRef.current.startRecording({
+        // fileType: 'mp4',
+        videoCodec: 'h265',
+        onRecordingFinished: async video => {
+          console.log(`Chunk ${chunkCounterRef.current} recorded:`, video.path);
+
+          // Process the chunk (upload to server)
+          await handleChunkUpload(video.path, chunkCounterRef.current);
+
+          // Start next chunk if still active
+          if (isStreamingActiveRef.current) {
+            chunkCounterRef.current += 1;
+            startChunkedRecording();
+          }
+        },
+        onRecordingError: error => {
+          console.error('Chunk recording error:', error);
+        },
+      });
+
+      // Set timeout to stop this chunk after 3 seconds
+      setTimeout(async () => {
+        try {
+          if (cameraRef.current) {
+            await cameraRef.current.stopRecording();
+          }
+        } catch (error) {
+          console.log('Error stopping chunk:', error);
+        }
+      }, 3000); // 3-second chunks
+    } catch (error) {
+      console.error('Error starting chunk recording:', error);
+    }
+  };
+
+  const startStreaming = async () => {
+    if (isStreamingActiveRef.current) return;
+
+    isStreamingActiveRef.current = true;
+    setLiveStreamStatus(true);
+    setChunkCounter(0);
+    chunkCounterRef.current = 0;
+
+    // Start recording chunks
+    await startChunkedRecording();
+
+    // Start duration timer
+    const interval = setInterval(() => {
+      setRecordDuration(prev => prev + 1);
+    }, 1000);
+    setRecordingIntervalId(interval);
+  };
+
+  const stopStreaming = async () => {
+    if (!isStreamingActiveRef.current) return;
+
+    isStreamingActiveRef.current = false;
+    setLiveStreamStatus(false);
+
+    // Clear duration timer
+    if (recordingIntervalId) {
+      clearInterval(recordingIntervalId);
+      setRecordingIntervalId(null);
+    }
+
+    // Stop current recording
+    try {
+      if (cameraRef.current) {
+        await cameraRef.current.stopRecording();
+      }
+    } catch (error) {
+      console.log('Error stopping final recording:', error);
+    }
+  };
+
+  // Handle chunk upload (implement your backend logic)
+  const handleChunkUpload = async (filePath, sequenceNumber) => {
+    console.log(`Uploading chunk ${sequenceNumber} from ${filePath}`);
+    // Implement your actual upload logic here:
+    // 1. Read file content
+    // 2. Send to your streaming server
+    // 3. Handle failures/retries
+  };
+
+  // Initialize streaming when focused
+  useEffect(() => {
+    if (isFocused && isCameraInitialized) {
+      startStreaming();
     }
 
     return () => {
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+      if (isStreamingActiveRef.current) {
+        stopStreaming();
       }
     };
-  }, [isFocused]);
+  }, [isFocused, isCameraInitialized]);
+
+  // const handleRecordVideo = async () => {
+  //   try {
+  //     setIsRecording(true);
+  //     setRecordDuration(0);
+
+  //     const recordingInterval = setInterval(() => {
+  //       setRecordDuration(prev => prev + 1);
+  //     }, 1000);
+
+  //     await cameraRef.current.startRecording({
+  //       onRecordingFinished: video => {
+  //         console.log('Recording finished:', video);
+  //         clearInterval(recordingInterval);
+  //         setIsRecording(false);
+  //         setRecordDuration(0);
+  //       },
+  //       onRecordingError: error => {
+  //         console.log('Recording error:', error);
+  //         clearInterval(recordingInterval);
+  //         setIsRecording(false);
+  //       },
+  //       fileType: 'mp4',
+  //     });
+  //   } catch (e) {
+  //     console.log('Error starting recording:', e);
+  //   }
+  // };
 
   function formatTime(seconds) {
     const hrs = Math.floor(seconds / 3600);
@@ -81,6 +198,21 @@ export default function LiveStreaming({navigation}) {
 
     return `${formattedHrs}:${formattedMins}:${formattedSecs}`;
   }
+
+  const handlePauseRecording = async () => {
+    try {
+      if (cameraRef.current) {
+        await cameraRef.current.stopRecording();
+      }
+      if (recordingIntervalId) {
+        clearInterval(recordingIntervalId);
+        setRecordingIntervalId(null);
+      }
+      setIsRecording(false);
+    } catch (error) {
+      console.log('Error pausing recording:', error);
+    }
+  };
 
   const socialIconLiveStream = [
     {icon: Xmls.youtubeIcon},
@@ -228,11 +360,21 @@ export default function LiveStreaming({navigation}) {
           )}
         </View>
         <View style={styles.cameraContainer}>
-          {localStream && (
-            <RTCView
-              streamURL={localStream.toURL()}
+          {device !== null && isFocused && (
+            <Camera
               style={StyleSheet.absoluteFill}
-              objectFit="cover"
+              ref={cameraRef}
+              device={device}
+              isActive={true}
+              video={true}
+              audio={true}
+              orientation="portrait"
+              onInitialized={() => setIsCameraInitialized(true)}
+              onError={error => {
+                console.log('Camera error:', error);
+              }}
+              // fps={60}
+              // videoBitRate="low"
             />
           )}
           <View style={styles.overlayContent}>
@@ -303,7 +445,7 @@ export default function LiveStreaming({navigation}) {
                   onPress={() => {
                     // handlePauseRecording();
                     setIsModalVisible(false);
-                    navigation.navigate('Summary');
+                    // navigation.navigate('Summary');
                   }}
                   style={{
                     height: verticalScale(60),
