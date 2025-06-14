@@ -44,7 +44,7 @@ export default function GoLive({navigation}) {
   const [audioQualityValue, setAudioQualityValue] = useState(null);
 
   const [audioQualityItems, setAudioQualityItems] = useState([
-    {label: 'Low', value: 'low'},
+    // {label: 'Low', value: 'low'},
     {label: 'Medium', value: 'medium'},
     {label: 'High', value: 'high'},
   ]);
@@ -95,7 +95,11 @@ export default function GoLive({navigation}) {
           <SvgXml xml={Xmls.settingIcon} />
         </TouchableOpacity>
       </View>
-      <ScrollView contentContainerStyle={{paddingBottom: verticalScale(64)}}>
+      <ScrollView
+        // contentContainerStyle={{ paddingBottom: verticalScale(64) }}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        style={{flex: 1}}>
         <Text
           style={{
             marginHorizontal: horizontalScale(20),
@@ -131,7 +135,7 @@ export default function GoLive({navigation}) {
           <Text
             style={{
               color: theme.lightColor.textWhite,
-              fontFamily: theme.fontFamily.LabGrotesqueRegular,
+              fontFamily: theme.fontFamily.LabGrotesqueBold,
             }}>
             Stream Settings
           </Text>
@@ -400,6 +404,11 @@ export default function GoLive({navigation}) {
             </TouchableOpacity>
           </LinearGradient>
         </View>
+        <View
+          style={{
+            height: verticalScale(55),
+          }}
+        />
       </ScrollView>
     </LinearWrapper>
   );
@@ -503,6 +512,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     borderRadius: moderateScale(8),
     color: theme.lightColor.textWhite,
+    marginTop: verticalScale(2),
   },
   thumbnail: {
     flexDirection: 'row',

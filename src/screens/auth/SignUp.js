@@ -23,6 +23,11 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
 import SocialLoginHook from '../../utils/hooks/SocialLoginHook';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+} from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 export default function SignUp({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage, false);
@@ -30,6 +35,10 @@ export default function SignUp({navigation}) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
 
   const handleFacebookLogin = async () => {
     setLoading(true);
@@ -81,6 +90,96 @@ export default function SignUp({navigation}) {
     {icon: Xmls.facebookIcon, title: 'Facebook', onPress: handleFacebookLogin},
   ];
 
+  const handleSignup = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (fullName.length < 3) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter correct name.',
+      });
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter a valid email address.',
+      });
+
+      return;
+    }
+
+    if (password.length < 8) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Password must be at least 8 characters.',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Passwords do not match.',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.toLocaleLowerCase(),
+        password,
+      );
+      // Update user display name
+      await userCredential.user.updateProfile({
+        displayName: fullName,
+      });
+
+      // Send email verification
+      await userCredential.user.sendEmailVerification();
+
+      console.log('User account created & signed in!', userCredential.user);
+      Toast.show({
+        type: 'success',
+        text1: 'Sign up Successful',
+        text2: 'Verification email sent to your inbox.',
+      });
+
+      navigation.navigate('Login');
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'That email address is already in use!',
+        });
+      } else if (error.code === 'auth/invalid-email') {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'That email address is invalid!',
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Signup failed. Please try again.',
+        });
+        console.error(error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <LinearWrapper>
       <ScrollView
@@ -109,13 +208,18 @@ export default function SignUp({navigation}) {
             style={style.inputStyle}
             placeholder="Full name"
             placeholderTextColor="#0000004A"
+            value={fullName}
+            onChangeText={setFullName}
           />
+
           <TextInput
             style={style.inputStyle}
             placeholder="Email address"
             placeholderTextColor="#0000004A"
             keyboardType="email-address"
             autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
           />
 
           {/* Password Field with eye icon */}
@@ -126,6 +230,8 @@ export default function SignUp({navigation}) {
               placeholderTextColor="#0000004A"
               secureTextEntry={!isPasswordVisible}
               autoCapitalize="none"
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
               onPress={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -146,6 +252,8 @@ export default function SignUp({navigation}) {
               placeholderTextColor="#0000004A"
               secureTextEntry={!isConfirmPasswordVisible}
               autoCapitalize="none"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
             <TouchableOpacity
               onPress={() =>
@@ -167,7 +275,7 @@ export default function SignUp({navigation}) {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             style={style.buttonWrapper}>
-            <TouchableOpacity style={style.buttonInner}>
+            <TouchableOpacity style={style.buttonInner} onPress={handleSignup}>
               <LinearGradient
                 colors={['#F1EA24', '#4CBA47']}
                 start={{x: 0, y: 0}}

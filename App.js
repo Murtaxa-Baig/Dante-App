@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+} from '@react-navigation/native';
 import AuthStack from './src/stacks/AuthStack';
 import AppStack from './src/stacks/AppStack';
 import {
@@ -13,6 +16,22 @@ import storage from './src/utils/hooks/MmkvHook';
 import {getApp} from '@react-native-firebase/app';
 import {getAuth, onAuthStateChanged} from '@react-native-firebase/auth';
 import SplashScreen from 'react-native-splash-screen';
+import Toast from 'react-native-toast-message';
+// navigation ref
+export const navigationRef = createNavigationContainerRef();
+
+// clear navigation
+export function clearAndNavigate(name, params) {
+  navigationRef.current?.reset({
+    index: 0,
+    routes: [
+      {
+        name,
+        params,
+      },
+    ],
+  });
+}
 
 export default function App() {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
@@ -23,7 +42,9 @@ export default function App() {
     const auth = getAuth(firebaseApp);
 
     const subscriber = onAuthStateChanged(auth, user => {
-      if (user) {
+      // console.log('onAuthStateChanged triggered');
+
+      if (user?.emailVerified) {
         setUserData(user?._user);
       } else {
         setUserData(null);
@@ -41,7 +62,9 @@ export default function App() {
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ThemeProvider>
-        <NavigationContainer onReady={() => SplashScreen.hide()}>
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => SplashScreen.hide()}>
           <StatusBar
             barStyle="light-content"
             backgroundColor="#F37A52"
@@ -49,6 +72,7 @@ export default function App() {
           />
           {userData ? <AppStack /> : <AuthStack />}
         </NavigationContainer>
+        <Toast />
       </ThemeProvider>
     </SafeAreaProvider>
   );

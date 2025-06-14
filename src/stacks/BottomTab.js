@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   createButtonContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -verticalScale(5),
+    marginTop: verticalScale(3),
   },
   iconWrapper: {
     marginTop: verticalScale(25),

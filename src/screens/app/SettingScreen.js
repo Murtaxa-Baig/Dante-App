@@ -414,13 +414,12 @@ export default function SettingScreen({navigation}) {
           </Text>
 
           <Text
-            style={{
-              fontFamily: theme.fontFamily.LabGrotesqueBold,
-              color: theme.lightColor.textWhite,
-              fontSize: 12,
-              marginVertical: verticalScale(20),
-              marginHorizontal: horizontalScale(8),
-            }}>
+            style={[
+              styles.sectionLabel,
+              {
+                marginVertical: verticalScale(20),
+              },
+            ]}>
             Getting Started
           </Text>
           <View
@@ -479,13 +478,12 @@ export default function SettingScreen({navigation}) {
           </View>
 
           <Text
-            style={{
-              fontFamily: theme.fontFamily.LabGrotesqueBold,
-              color: theme.lightColor.textWhite,
-              fontSize: 12,
-              marginVertical: verticalScale(20),
-              marginHorizontal: horizontalScale(8),
-            }}>
+            style={[
+              styles.sectionLabel,
+              {
+                marginVertical: verticalScale(20),
+              },
+            ]}>
             Livestreaming Features
           </Text>
           <View
@@ -544,13 +542,12 @@ export default function SettingScreen({navigation}) {
           </View>
 
           <Text
-            style={{
-              fontFamily: theme.fontFamily.LabGrotesqueBold,
-              color: theme.lightColor.textWhite,
-              marginVertical: verticalScale(20),
-              marginHorizontal: horizontalScale(8),
-              fontSize: 12,
-            }}>
+            style={[
+              styles.sectionLabel,
+              {
+                marginVertical: verticalScale(20),
+              },
+            ]}>
             Technical Support
           </Text>
           <View
@@ -686,7 +683,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: theme.lightColor.textWhite,
     fontFamily: theme.fontFamily.LabGrotesqueBold,
-    fontSize: 12,
+    fontSize: 14,
     marginVertical: verticalScale(6),
     marginHorizontal: horizontalScale(8),
   },

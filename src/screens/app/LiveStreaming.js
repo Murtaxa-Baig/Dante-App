@@ -140,6 +140,7 @@ export default function LiveStreaming({navigation}) {
   // Handle chunk upload (implement your backend logic)
   const handleChunkUpload = async (filePath, sequenceNumber) => {
     console.log(`Uploading chunk ${sequenceNumber} from ${filePath}`);
+
     // Implement your actual upload logic here:
     // 1. Read file content
     // 2. Send to your streaming server
@@ -265,10 +266,17 @@ export default function LiveStreaming({navigation}) {
           <View style={{height: 20}} />
         )}
       </View>
-
-      <View style={styles.socialContainer}>
-        <SvgXml xml={item.icon} width={30} height={30} />
-      </View>
+      {item.icon == Xmls.addSocialItemIcon ? (
+        <TouchableOpacity
+          onPress={console.log('clicked')}
+          style={styles.socialContainer}>
+          <SvgXml xml={item.icon} width={30} height={30} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.socialContainer}>
+          <SvgXml xml={item.icon} width={30} height={30} />
+        </View>
+      )}
 
       {item.icon !== Xmls.addSocialItemIcon && (
         <View style={{marginTop: verticalScale(-12)}}>

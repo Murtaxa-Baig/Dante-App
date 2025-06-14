@@ -17,12 +17,45 @@ import {theme} from '../../components/Theme';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import LinearGradient from 'react-native-linear-gradient';
+import Share from 'react-native-share';
+import {clearAndNavigate} from '../../../App';
 
 export default function Summary({navigation}) {
+  const handleShare = async () => {
+    const shareOptions = {
+      title: 'Share Stream perfomance!',
+      message: 'Check this cool content!',
+      url: 'https://example.com',
+    };
+
+    try {
+      const shareResponse = await Share.open(shareOptions);
+      console.log('Share success:', shareResponse);
+    } catch (err) {
+      if (err && err.message !== 'User did not share') {
+        Alert.alert('Error', 'Something went wrong while sharing.');
+        console.log(err);
+      }
+    }
+  };
+
   return (
     <LinearWrapper>
       <ScrollView>
-        <AppHeader navigation={navigation} />
+        {/* <AppHeader navigation={navigation} /> */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => {
+              clearAndNavigate('BottomTab');
+            }}
+            style={{
+              width: '20%',
+              height: verticalScale(24),
+            }}>
+            <SvgXml xml={Xmls.backArrowIcon} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Overview</Text>
+        </View>
         <View style={styles.Performance}>
           <Text style={styles.streamText}>Stream Performance Overview</Text>
           <View
@@ -455,7 +488,7 @@ export default function Summary({navigation}) {
             }}>
             Save Recording
           </Text>
-          <SvgXml xml={Xmls.dropdownIconWhite} />
+          {/* <SvgXml xml={Xmls.dropdownIconWhite} /> */}
         </View>
         <View
           style={{
@@ -466,7 +499,7 @@ export default function Summary({navigation}) {
             marginHorizontal: horizontalScale(20),
           }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('All')}
+            // onPress={() => navigation.navigate('All')}
             style={{
               height: verticalScale(60),
               width: '48%',
@@ -578,6 +611,7 @@ export default function Summary({navigation}) {
             marginHorizontal: horizontalScale(20),
           }}>
           <TouchableOpacity
+            onPress={handleShare}
             activeOpacity={0.8}
             style={{
               height: verticalScale(57),
@@ -645,5 +679,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: horizontalScale(6),
     paddingVertical: verticalScale(6),
     // textAlign: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: horizontalScale(20),
+    marginBottom: verticalScale(12),
+    marginTop: horizontalScale(42),
+  },
+  title: {
+    width: '90%',
+    textAlign: 'center',
+    marginLeft: horizontalScale(-40),
+    color: theme.lightColor.textWhite,
+    fontSize: 18,
+    fontFamily: theme.fontFamily.LabGrotesqueBold,
   },
 });

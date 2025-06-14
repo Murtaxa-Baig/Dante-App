@@ -22,8 +22,8 @@ export default function AppStack() {
         // gestureDirection: 'horizontal',
         headerShown: false,
       }}
-      initialRouteName="All">
-      <Stack.Screen name="All" component={BottomTab} />
+      initialRouteName="BottomTab">
+      <Stack.Screen name="BottomTab" component={BottomTab} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="GoLive" component={GoLive} />
       <Stack.Screen name="History" component={History} />

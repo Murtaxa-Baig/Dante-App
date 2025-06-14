@@ -232,10 +232,47 @@ export default function OnBoardingScreen({navigation}) {
                 </LinearGradient>
               </TouchableOpacity>
             </LinearGradient>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginVertical: verticalScale(16),
+                gap: horizontalScale(4),
+              }}>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: theme.lightColor.textWhite,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: moderateScale(12),
+                    textDecorationLine: 'underline',
+                  }}>
+                  Terms of Service
+                </Text>
+              </TouchableOpacity>
 
-            <Text style={style.termsText}>
-              Terms of Service & Privacy Policy
-            </Text>
+              <Text
+                style={{
+                  color: theme.lightColor.textWhite,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  fontSize: moderateScale(12),
+                }}>
+                &
+              </Text>
+
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: theme.lightColor.textWhite,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: moderateScale(12),
+                    textDecorationLine: 'underline',
+                  }}>
+                  Privacy Policy
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <InstagramLogin
             ref={instagramLoginRef}
@@ -325,11 +362,5 @@ const style = StyleSheet.create({
     color: theme.lightColor.textWhite,
     fontSize: 18,
     fontFamily: theme.fontFamily.LabGrotesqueBold,
-  },
-  termsText: {
-    color: theme.lightColor.textWhite,
-    textAlign: 'center',
-    fontSize: moderateScale(12),
-    marginVertical: verticalScale(20),
   },
 });

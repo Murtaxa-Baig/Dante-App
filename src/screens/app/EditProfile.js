@@ -83,11 +83,40 @@ export default function EditProfile({navigation}) {
           end={{x: 1, y: 0}}
           style={styles.gradientBorder}>
           <View style={styles.innerCircle}>
-            <SvgXml
-              xml={Xmls.profileIcon}
-              width={CIRCLE_SIZE / 2}
-              height={CIRCLE_SIZE / 2}
-            />
+            {userData?.photoURL ? (
+              <Image
+                source={{uri: userData.photoURL}}
+                style={{
+                  width: CIRCLE_SIZE - 4,
+                  height: CIRCLE_SIZE - 4,
+                  borderRadius: CIRCLE_SIZE / 2,
+                }}
+                resizeMode="cover"
+              />
+            ) : (
+              <SvgXml
+                xml={Xmls.profileIcon}
+                width={CIRCLE_SIZE / 2}
+                height={CIRCLE_SIZE / 2}
+              />
+            )}
+            <TouchableOpacity
+              style={{
+                height: 30,
+                width: 30,
+                borderRadius: moderateScale(30),
+                borderWidth: 1,
+                borderColor: theme.lightColor.textGray,
+                backgroundColor: theme.lightColor.bgWhite,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: verticalScale(16),
+                right: horizontalScale(0),
+              }}>
+              <SvgXml xml={Xmls.editIcon} width={16} height={16} />
+            </TouchableOpacity>
           </View>
         </LinearGradient>
         <Text
@@ -166,6 +195,7 @@ export default function EditProfile({navigation}) {
                 fontSize: 12,
                 borderColor: theme.lightColor.textBlack,
                 fontFamily: theme.fontFamily.LabGrotesqueBold,
+                color: theme.lightColor.textBlack,
                 // borderWidth: 1,
                 // borderRadius: 8,
                 // paddingHorizontal: 10,

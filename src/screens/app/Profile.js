@@ -27,7 +27,6 @@ import {getAuth, signOut} from '@react-native-firebase/auth';
 export default function Profile({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
 
-  const [isEditProfile, setIsEditProfile] = useState(false);
   const [resolutionOpen, setResolutionOpen] = useState(false);
   const [resolutionValue, setResolutionValue] = useState(null);
   const [resolutionItems, setResolutionItems] = useState([
@@ -102,24 +101,6 @@ export default function Profile({navigation}) {
                 height={CIRCLE_SIZE / 2}
               />
             )}
-
-            <TouchableOpacity
-              style={{
-                height: 30,
-                width: 30,
-                borderRadius: moderateScale(30),
-                borderWidth: 1,
-                borderColor: theme.lightColor.textGray,
-                backgroundColor: theme.lightColor.bgWhite,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'absolute',
-                bottom: verticalScale(16),
-                right: horizontalScale(0),
-              }}>
-              <SvgXml xml={Xmls.editIcon} width={16} height={16} />
-            </TouchableOpacity>
           </View>
         </LinearGradient>
         <Text
@@ -154,36 +135,34 @@ export default function Profile({navigation}) {
             14k followers
           </Text>
         </View>
-        {!isEditProfile && (
-          <TouchableOpacity
-            // onPress={() => setIsEditProfile(true)}
-            onPress={() => navigation.navigate('EditProfile')}
+        <TouchableOpacity
+          // onPress={() => setIsEditProfile(true)}
+          onPress={() => navigation.navigate('EditProfile')}
+          style={{
+            height: verticalScale(46),
+            width: horizontalScale(164),
+            marginVertical: verticalScale(12),
+          }}>
+          <LinearGradient
+            colors={['#F1EA24', '#4CBA47']}
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
             style={{
-              height: verticalScale(46),
-              width: horizontalScale(164),
-              marginVertical: verticalScale(12),
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderRadius: moderateScale(24),
             }}>
-            <LinearGradient
-              colors={['#F1EA24', '#4CBA47']}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
+            <Text
               style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: moderateScale(24),
+                color: theme.lightColor.textWhite,
+                fontSize: 18,
+                fontFamily: theme.fontFamily.LabGrotesqueBold,
               }}>
-              <Text
-                style={{
-                  color: theme.lightColor.textWhite,
-                  fontSize: 18,
-                  fontFamily: theme.fontFamily.LabGrotesqueBold,
-                }}>
-                Edit profile
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
+              Edit profile
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={{paddingBottom: verticalScale(64)}}>
         <View style={styles.container}>
@@ -715,6 +694,7 @@ const styles = StyleSheet.create({
   dropDownContainer: {
     backgroundColor: theme.lightColor.textGray,
     borderColor: 'transparent',
+    marginTop: verticalScale(2),
     borderRadius: moderateScale(8),
     color: theme.lightColor.textWhite,
   },

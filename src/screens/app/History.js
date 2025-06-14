@@ -259,10 +259,10 @@ export default function History({navigation}) {
                     paddingVertical: verticalScale(10),
                     paddingHorizontal: horizontalScale(10),
                     borderColor: '#EFEFEF',
-                    borderWidth: selectedOption === option ? 0 : 1,
+                    borderWidth: selectedOption === option ? 1 : 1,
                     borderRadius: 10,
                     marginRight:
-                      index !== options.length - 1 ? horizontalScale(8) : 0,
+                      index !== options.length - 1 ? horizontalScale(4) : 0,
                     alignItems: 'center',
                   }}>
                   <Text
@@ -566,342 +566,10 @@ export default function History({navigation}) {
               Sort by date
             </Text>
           </View>
-
-          {/* <LinearGradient
-            colors={['#F1EA24', '#4CBA47']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={[
-              styles.buttonWrapper,
-              {
-                marginBottom: verticalScale(12),
-              },
-            ]}>
-            <View style={styles.innerViewPastStream}>
-              <View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
-                  <View style={styles.pastSocialViewContainer}>
-                    <SvgXml xml={Xmls.instagramIcon} height={16} width={16} />
-                  </View>
-                  <View
-                    style={[
-                      styles.pastSocialViewContainer,
-                      {marginLeft: horizontalScale(-6)},
-                    ]}>
-                    <SvgXml xml={Xmls.youtubeIcon} height={16} width={16} />
-                  </View>
-                  <View
-                    style={[
-                      styles.pastSocialViewContainer,
-                      {
-                        marginLeft: horizontalScale(-6),
-                      },
-                    ]}>
-                    <SvgXml xml={Xmls.tiktokIcon} height={16} width={16} />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: horizontalScale(90),
-                    marginTop: verticalScale(4),
-                  }}>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                        color: theme.lightColor.textGray,
-                      }}>
-                      75k
-                    </Text>
-                    <SvgXml
-                      xml={Xmls.likeIconGray}
-                      height={12}
-                      width={12}
-                      style={{
-                        marginTop: verticalScale(2),
-                        marginHorizontal: horizontalScale(3),
-                      }}
-                    />
-                  </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                        color: theme.lightColor.textGray,
-                      }}>
-                      120k
-                    </Text>
-                    <SvgXml
-                      xml={Xmls.viewIconGray}
-                      height={12}
-                      width={12}
-                      style={{
-                        marginTop: verticalScale(2),
-                        marginHorizontal: horizontalScale(3),
-                      }}
-                    />
-                  </View>
-                </View>
-              </View>
-              <View>
-                <Text
-                  style={{
-                    color: theme.lightColor.testYellow,
-                    fontFamily: theme.fontFamily.LabGrotesqueBold,
-                  }}>
-                  January 4, 2024
-                </Text>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <SvgXml
-                    xml={Xmls.timierIconGray}
-                    style={{marginRight: verticalScale(4)}}
-                  />
-                  <Text style={{color: theme.lightColor.textGray}}>
-                    5:00:30
-                  </Text>
-                </View>
-              </View>
-              <LinearGradient
-                colors={['#F1EA24', '#4CBA47']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={[
-                  styles.innerCircle,
-                  {
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  },
-                ]}>
-                <SvgXml xml={Xmls.arrowIcon} height={24} width={24} />
-              </LinearGradient>
-            </View>
-          </LinearGradient>
-          <View
-            style={[
-              styles.innerViewPastStream,
-              {
-                marginBottom: verticalScale(12),
-              },
-            ]}>
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <View style={styles.pastSocialViewContainer}>
-                  <SvgXml xml={Xmls.instagramIcon} height={16} width={16} />
-                </View>
-                <View
-                  style={[
-                    styles.pastSocialViewContainer,
-                    {marginLeft: horizontalScale(-6)},
-                  ]}>
-                  <SvgXml xml={Xmls.youtubeIcon} height={16} width={16} />
-                </View>
-                <View
-                  style={[
-                    styles.pastSocialViewContainer,
-                    {
-                      marginLeft: horizontalScale(-6),
-                    },
-                  ]}>
-                  <SvgXml xml={Xmls.tiktokIcon} height={16} width={16} />
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: horizontalScale(90),
-                  marginTop: verticalScale(4),
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      color: theme.lightColor.textGray,
-                    }}>
-                    75k
-                  </Text>
-                  <SvgXml
-                    xml={Xmls.likeIconGray}
-                    height={12}
-                    width={12}
-                    style={{
-                      marginTop: verticalScale(2),
-                      marginHorizontal: horizontalScale(3),
-                    }}
-                  />
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      color: theme.lightColor.textGray,
-                    }}>
-                    120k
-                  </Text>
-                  <SvgXml
-                    xml={Xmls.viewIconGray}
-                    height={12}
-                    width={12}
-                    style={{
-                      marginTop: verticalScale(2),
-                      marginHorizontal: horizontalScale(3),
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-            <View>
-              <Text
-                style={{
-                  color: theme.lightColor.textWhite,
-                  fontFamily: theme.fontFamily.LabGrotesqueBold,
-                }}>
-                January 4, 2024
-              </Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <SvgXml
-                  xml={Xmls.timierIconGray}
-                  style={{marginRight: verticalScale(4)}}
-                />
-                <Text style={{color: theme.lightColor.textGray}}>5:00:30</Text>
-              </View>
-            </View>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: CIRCLE_SIZE - moderateScale(4),
-                width: CIRCLE_SIZE - moderateScale(4),
-              }}>
-              <SvgXml xml={Xmls.arrowIconGradiant} height={24} width={24} />
-            </View>
-          </View>
-          <View
-            style={[
-              styles.innerViewPastStream,
-              {
-                marginBottom: verticalScale(12),
-              },
-            ]}>
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <View style={styles.pastSocialViewContainer}>
-                  <SvgXml xml={Xmls.instagramIcon} height={16} width={16} />
-                </View>
-                <View
-                  style={[
-                    styles.pastSocialViewContainer,
-                    {marginLeft: horizontalScale(-6)},
-                  ]}>
-                  <SvgXml xml={Xmls.youtubeIcon} height={16} width={16} />
-                </View>
-                <View
-                  style={[
-                    styles.pastSocialViewContainer,
-                    {
-                      marginLeft: horizontalScale(-6),
-                    },
-                  ]}>
-                  <SvgXml xml={Xmls.tiktokIcon} height={16} width={16} />
-                </View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: horizontalScale(90),
-                  marginTop: verticalScale(4),
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      color: theme.lightColor.textGray,
-                    }}>
-                    75k
-                  </Text>
-                  <SvgXml
-                    xml={Xmls.likeIconGray}
-                    height={12}
-                    width={12}
-                    style={{
-                      marginTop: verticalScale(2),
-                      marginHorizontal: horizontalScale(3),
-                    }}
-                  />
-                </View>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      fontFamily: theme.fontFamily.LabGrotesqueRegular,
-                      color: theme.lightColor.textGray,
-                    }}>
-                    120k
-                  </Text>
-                  <SvgXml
-                    xml={Xmls.viewIconGray}
-                    height={12}
-                    width={12}
-                    style={{
-                      marginTop: verticalScale(2),
-                      marginHorizontal: horizontalScale(3),
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-            <View>
-              <Text
-                style={{
-                  color: theme.lightColor.textWhite,
-                  fontFamily: theme.fontFamily.LabGrotesqueBold,
-                }}>
-                January 4, 2024
-              </Text>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <SvgXml
-                  xml={Xmls.timierIconGray}
-                  style={{marginRight: verticalScale(4)}}
-                />
-                <Text style={{color: theme.lightColor.textGray}}>5:00:30</Text>
-              </View>
-            </View>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: CIRCLE_SIZE - moderateScale(4),
-                width: CIRCLE_SIZE - moderateScale(4),
-              }}>
-              <SvgXml xml={Xmls.arrowIconGradiant} height={24} width={24} />
-            </View>
-          </View> */}
           {liveStreamData.map((item, index) => {
             const isSelected = selectedIndex === index;
             const Wrapper = isSelected ? LinearGradient : View;
+            const ArrowWrapper = isSelected ? LinearGradient : View;
 
             return (
               <Pressable
@@ -1034,21 +702,27 @@ export default function History({navigation}) {
                       </View>
                     </View>
 
-                    <View
+                    <ArrowWrapper
+                      {...(isSelected && {
+                        colors: ['#F1EA24', '#4CBA47'],
+                        start: {x: 0, y: 0},
+                        end: {x: 1, y: 0},
+                      })}
                       style={{
                         justifyContent: 'center',
                         alignItems: 'center',
+                        borderRadius: moderateScale(25),
                         height: CIRCLE_SIZE - moderateScale(4),
                         width: CIRCLE_SIZE - moderateScale(4),
                       }}>
                       <SvgXml
                         xml={
-                          isSelected ? Xmls.arrowIconGradiant : Xmls.arrowIcon
+                          isSelected ? Xmls.arrowIcon : Xmls.arrowIconGradiant
                         }
                         height={24}
                         width={24}
                       />
-                    </View>
+                    </ArrowWrapper>
                   </View>
                 </Wrapper>
               </Pressable>

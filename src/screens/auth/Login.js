@@ -22,11 +22,15 @@ import LinearGradient from 'react-native-linear-gradient';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from '../../utils/hooks/MmkvHook';
 import SocialLoginHook from '../../utils/hooks/SocialLoginHook';
+import {getAuth, signInWithEmailAndPassword} from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
 export default function Login({navigation}) {
   const [userData, setUserData] = useMMKVStorage('userData', storage, false);
   const [loading, setLoading] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleFacebookLogin = async () => {
     setLoading(true);
@@ -77,7 +81,80 @@ export default function Login({navigation}) {
     {icon: Xmls.twitchIcon, title: 'Twitch', onPress: handleTwitchLogin},
     {icon: Xmls.facebookIcon, title: 'Facebook', onPress: handleFacebookLogin},
   ];
+  const handleLogin = async () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!emailRegex.test(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Email',
+        text2: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      Toast.show({
+        type: 'error',
+        text1: 'Invalid Password',
+        text2: 'Password must be at least 8 characters long.',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email.trim().toLowerCase(),
+        password,
+      );
+
+      if (!userCredential.user.emailVerified) {
+        Toast.show({
+          type: 'error',
+          text1: 'Email Not Verified',
+          text2: 'Please verify your email before logging in.',
+        });
+
+        await auth.signOut();
+        return;
+      }
+
+      setUserData(userCredential.user?._user);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Login Successful',
+      });
+    } catch (error) {
+      let errorTitle = 'Login Failed';
+      let errorMessage = 'An unexpected error occurred.';
+
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorTitle = 'User Not Found';
+          errorMessage = 'No account exists with this email.';
+          break;
+        case 'auth/invalid-credential':
+          errorTitle = 'Invalid Credential';
+          errorMessage = 'Incorrect Email or Password';
+          break;
+        default:
+          console.error('Login error:', error);
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: errorTitle,
+        text2: errorMessage,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <LinearWrapper>
       <ScrollView
@@ -145,6 +222,8 @@ export default function Login({navigation}) {
               placeholderTextColor="#0000004A"
               keyboardType="email-address"
               autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
             />
 
             {/* Password input with icon using flexbox */}
@@ -155,6 +234,8 @@ export default function Login({navigation}) {
                 placeholderTextColor="#0000004A"
                 secureTextEntry={!isPasswordVisible}
                 autoCapitalize="none"
+                value={password}
+                onChangeText={setPassword}
               />
               <TouchableOpacity
                 onPress={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -179,7 +260,7 @@ export default function Login({navigation}) {
                 marginTop: verticalScale(20),
               }}>
               <TouchableOpacity
-                // onPress={() => setUserData(true)}
+                onPress={handleLogin}
                 style={{
                   height: verticalScale(60),
                   width: '100%',
@@ -248,16 +329,47 @@ export default function Login({navigation}) {
                 </LinearGradient>
               </TouchableOpacity>
             </LinearGradient>
-
-            <Text
+            <View
               style={{
-                color: theme.lightColor.textWhite,
-                textAlign: 'center',
-                fontSize: moderateScale(12),
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginVertical: verticalScale(16),
+                gap: horizontalScale(4),
               }}>
-              Terms of Service & Privacy Policy
-            </Text>
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: theme.lightColor.textWhite,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: moderateScale(12),
+                    textDecorationLine: 'underline',
+                  }}>
+                  Terms of Service
+                </Text>
+              </TouchableOpacity>
+
+              <Text
+                style={{
+                  color: theme.lightColor.textWhite,
+                  fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                  fontSize: moderateScale(12),
+                }}>
+                &
+              </Text>
+
+              <TouchableOpacity>
+                <Text
+                  style={{
+                    color: theme.lightColor.textWhite,
+                    fontFamily: theme.fontFamily.LabGrotesqueRegular,
+                    fontSize: moderateScale(12),
+                    textDecorationLine: 'underline',
+                  }}>
+                  Privacy Policy
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
